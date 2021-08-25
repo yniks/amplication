@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { Switch, Route, match } from "react-router-dom";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { gql, useQuery } from "@apollo/client";
 
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
@@ -59,6 +60,7 @@ function ApplicationLayout({ match }: Props) {
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
     EnumFixedPanelKeys.PendingChanges
@@ -75,13 +77,12 @@ function ApplicationLayout({ match }: Props) {
     [selectedFixedPanel]
   );
 
-  const { data: pendingChangesData, refetch } = useQuery<
-    PendingChangeStatusData
-  >(GET_PENDING_CHANGES_STATUS, {
-    variables: {
-      applicationId: application,
-    },
-  });
+  const { data: pendingChangesData, refetch } =
+    useQuery<PendingChangeStatusData>(GET_PENDING_CHANGES_STATUS, {
+      variables: {
+        applicationId: application,
+      },
+    });
 
   const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
     variables: {
@@ -147,11 +148,19 @@ function ApplicationLayout({ match }: Props) {
     },
     [setCommitRunning]
   );
+  const setIsErrorCallback = useCallback(
+    (onError: boolean) => {
+      setIsError(onError);
+    },
+    [setIsError]
+  );
 
   const pendingChangesContextValue = useMemo(
     () => ({
       pendingChanges,
       commitRunning,
+      isError,
+      setIsError: setIsErrorCallback,
       setCommitRunning: setCommitRunningCallback,
       addEntity,
       addBlock,
@@ -161,11 +170,13 @@ function ApplicationLayout({ match }: Props) {
     [
       pendingChanges,
       commitRunning,
+      isError,
       addEntity,
       addBlock,
       addChange,
       resetPendingChanges,
       setCommitRunningCallback,
+      setIsErrorCallback,
     ]
   );
 
@@ -220,7 +231,7 @@ function ApplicationLayout({ match }: Props) {
             <NavigationTabs defaultTabUrl={`/${application}/`} />
 
             <Switch>
-              <Route
+              <RouteWithAnalytics
                 path="/:application/pending-changes"
                 component={PendingChangesPage}
               />
@@ -240,14 +251,17 @@ function ApplicationLayout({ match }: Props) {
                   />
                 </>
               )}
-              <Route
+              <RouteWithAnalytics
                 path="/:application/builds/:buildId"
                 component={BuildPage}
               />
 
-              <Route path="/:application/roles" component={RolesPage} />
+              <RouteWithAnalytics
+                path="/:application/roles"
+                component={RolesPage}
+              />
               <Route path="/:application/commits" component={Commits} />
-              <Route
+              <RouteWithAnalytics
                 path="/:application/fix-related-entities"
                 component={RelatedFieldsMigrationFix}
               />

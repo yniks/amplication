@@ -1,6 +1,12 @@
 @mixin fontMono {
   font-family: "DM Mono", monospace;
 }
+
+@mixin headline1 {
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 48px;
+}
 @mixin pageTitle {
   font-weight: normal;
   font-size: 24px;
@@ -110,6 +116,11 @@ $bullet-size: 6px;
   }
 }
 
+@mixin highlightPanel {
+  background-color: var(--theme-turquoise-transparent);
+  border: 1px solid var(--theme-turquoise);
+}
+
 @mixin applicationCard {
   box-sizing: border-box;
   background: var(--black2);
@@ -130,6 +141,34 @@ $bullet-size: 6px;
   &:hover {
     box-shadow: var(--hover-box-shadow);
     background: var(--black5);
+  }
+}
+
+@mixin optionCard {
+  box-sizing: border-box;
+  background: var(--black5);
+  border-radius: var(--default-border-radius);
+  border: none;
+
+  padding: var(--large-spacing);
+  width: var(--application-card-width);
+  height: var(--application-card-height);
+  margin: var(--large-spacing);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--black10);
+  text-align: center;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  &:first-child {
+    margin-left: 0;
+  }
+  &:hover {
+    box-shadow: var(--hover-box-shadow);
+    background: var(--black10);
   }
 }
 

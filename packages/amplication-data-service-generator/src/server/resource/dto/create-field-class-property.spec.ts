@@ -54,6 +54,7 @@ const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
   description: "Example optional entity field description",
   dataType: EnumDataType.Id,
   required: false,
+  unique: false,
   searchable: false,
 };
 const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
@@ -64,6 +65,7 @@ const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
   description: "Example list entity field description",
   dataType: EnumDataType.Roles,
   required: true,
+  unique: false,
   searchable: false,
 };
 
@@ -158,7 +160,7 @@ describe("createFieldClassProperty", () => {
         builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
           builders.tsTypeReference(
-            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+            builders.identifier(EXAMPLE_OTHER_ENTITY.name)
           )
         ),
         false,
@@ -171,7 +173,10 @@ describe("createFieldClassProperty", () => {
                 builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
                 builders.objectProperty(
                   TYPE_ID,
-                  createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+                  builders.arrowFunctionExpression(
+                    [],
+                    builders.identifier(EXAMPLE_OTHER_ENTITY.name)
+                  )
                 ),
               ]),
             ])
@@ -181,7 +186,7 @@ describe("createFieldClassProperty", () => {
             builders.callExpression(classTransformerUtil.TYPE_ID, [
               builders.arrowFunctionExpression(
                 [],
-                createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+                builders.identifier(EXAMPLE_OTHER_ENTITY.name)
               ),
             ])
           ),
@@ -214,7 +219,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ScalarField | ObjectField,
     boolean,
     boolean,
-    TSTypeKind
+    TSTypeKind[]
   ]> = [
     [
       "scalar type",
@@ -222,7 +227,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
       false,
       false,
-      builders.tsStringKeyword(),
+      [builders.tsStringKeyword()],
     ],
     [
       "lookup type, not isInput",
@@ -235,9 +240,11 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
-      ),
+      [
+        builders.tsTypeReference(
+          builders.identifier(EXAMPLE_OTHER_ENTITY.name)
+        ),
+      ],
     ],
     [
       "lookup type, isInput",
@@ -250,9 +257,11 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       true,
       false,
-      builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
-      ),
+      [
+        builders.tsTypeReference(
+          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+        ),
+      ],
     ],
     [
       "lookup type, isInput, optional",
@@ -265,12 +274,14 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       true,
       false,
-      builders.tsUnionType([
-        builders.tsTypeReference(
-          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
-        ),
-        builders.tsNullKeyword(),
-      ]),
+      [
+        builders.tsUnionType([
+          builders.tsTypeReference(
+            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+          ),
+          builders.tsNullKeyword(),
+        ]),
+      ],
     ],
     [
       "optional scalar type",
@@ -283,10 +294,12 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      builders.tsUnionType([
-        builders.tsStringKeyword(),
-        builders.tsNullKeyword(),
-      ]),
+      [
+        builders.tsUnionType([
+          builders.tsStringKeyword(),
+          builders.tsNullKeyword(),
+        ]),
+      ],
     ],
     [
       "scalar list type",
@@ -299,7 +312,10 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      createGenericArray(builders.tsStringKeyword()),
+      [
+        createGenericArray(builders.tsStringKeyword()),
+        builders.tsStringKeyword(),
+      ],
     ],
   ];
   test.each(cases)(
@@ -309,6 +325,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         createFieldValueTypeFromPrismaField(
           field,
           prismaField,
+          field.required,
           isInput,
           isEnum,
           false

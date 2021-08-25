@@ -7,7 +7,8 @@ export const EXAMPLE_ID_FIELD: EntityField = {
   displayName: "ID",
   name: "id",
   required: true,
-  searchable: false,
+  unique: false,
+  searchable: true,
   properties: {},
   description: "The entity identifier",
 };
@@ -19,6 +20,20 @@ export const EXAMPLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
   displayName: "Example Single Line Text Field",
   name: "exampleSingleLineTextField",
   required: true,
+  unique: false,
+  searchable: true,
+  properties: {},
+  description: "Example Single Line Text Field Description",
+};
+
+export const EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
+  id: "EXAMPLE_SINGLE_LINE_TEXT_FIELD_ID",
+  permanentId: "EXAMPLE_SINGLE_LINE_PERMANENT_FIELD_ID",
+  dataType: EnumDataType.SingleLineText,
+  displayName: "Example Single Line Text Field",
+  name: "exampleSingleLineTextField",
+  required: true,
+  unique: false,
   searchable: false,
   properties: {},
   description: "Example Single Line Text Field Description",
@@ -37,7 +52,8 @@ export const EXAMPLE_LOOKUP_FIELD: EntityField = {
   displayName: "Example Lookup Field",
   name: "exampleLookupField",
   required: true,
-  searchable: false,
+  unique: false,
+  searchable: true,
   properties: {
     relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
     relatedEntity: EXAMPLE_OTHER_ENTITY,

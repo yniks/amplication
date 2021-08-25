@@ -3,27 +3,27 @@ import * as swagger from "@nestjs/swagger";
 import * as nestMorgan from "nest-morgan";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import * as basicAuthGuard from "../../auth/basicAuth.guard";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 // @ts-ignore
 import * as abacUtil from "../../auth/abac.util";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import * as errors from "../../errors";
-
-declare interface CREATE_QUERY {}
-declare interface UPDATE_QUERY {}
-declare interface DELETE_QUERY {}
+import { Request } from "express";
+import { plainToClass } from "class-transformer";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
 declare interface WHERE_UNIQUE_INPUT {}
+declare class FIND_MANY_ARGS {
+  where: WHERE_INPUT;
+}
 declare interface UPDATE_INPUT {}
 
 declare const FINE_ONE_PATH: string;
 declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
-declare interface FIND_ONE_QUERY {}
 
 declare class ENTITY {}
 declare interface Select {}
@@ -56,7 +56,10 @@ export class CONTROLLER_BASE {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -66,7 +69,6 @@ export class CONTROLLER_BASE {
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
-    @common.Query() query: CREATE_QUERY,
     @common.Body() data: CREATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
@@ -88,16 +90,17 @@ export class CONTROLLER_BASE {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
-    // @ts-ignore
     return await this.service.create({
-      ...query,
       data: CREATE_DATA_MAPPING,
       select: SELECT,
     });
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -106,10 +109,18 @@ export class CONTROLLER_BASE {
   })
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
+  @swagger.ApiQuery({
+    //@ts-ignore
+    type: () => FIND_MANY_ARGS,
+    style: "deepObject",
+    explode: true,
+  })
   async findMany(
-    @common.Query() query: WHERE_INPUT,
+    @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
+    const args = plainToClass(FIND_MANY_ARGS, request.query);
+
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "read",
@@ -117,14 +128,17 @@ export class CONTROLLER_BASE {
       resource: ENTITY_NAME,
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: SELECT,
     });
     return results.map((result) => permission.filter(result));
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(FINE_ONE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -135,7 +149,6 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Query() query: FIND_ONE_QUERY,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
@@ -146,7 +159,6 @@ export class CONTROLLER_BASE {
       resource: ENTITY_NAME,
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: SELECT,
     });
@@ -159,7 +171,10 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -170,7 +185,6 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
-    @common.Query() query: UPDATE_QUERY,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body()
     data: UPDATE_INPUT,
@@ -195,9 +209,7 @@ export class CONTROLLER_BASE {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
-        ...query,
         where: params,
         data: UPDATE_DATA_MAPPING,
         select: SELECT,
@@ -213,7 +225,10 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -224,12 +239,10 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
-    @common.Query() query: DELETE_QUERY,
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: SELECT,
       });

@@ -4,7 +4,8 @@ import {
   AppService,
   INITIAL_COMMIT_MESSAGE,
   DEFAULT_APP_COLOR,
-  DEFAULT_APP_DATA
+  DEFAULT_APP_DATA,
+  INVALID_APP_ID
 } from './app.service';
 
 import { PrismaService } from 'nestjs-prisma';
@@ -17,19 +18,27 @@ import { Environment } from '../environment/dto/Environment';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
+import { Block } from 'src/models/Block';
+import { EntityField } from 'src/models/EntityField';
 import { PendingChange } from './dto/PendingChange';
-import { EntityVersion, Commit } from 'src/models';
+import { EntityVersion, Commit, BlockVersion } from 'src/models';
 import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
 import {
   createSampleAppEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
-import { USER_ENTITY_NAME } from '../entity/constants';
+import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
 import { GithubService } from '../github/github.service';
+import { BlockService } from '../block/block.service';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { QueryMode } from 'src/enums/QueryMode';
+import { prepareDeletedItemName } from '../../util/softDelete';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -40,6 +49,7 @@ const INVALID_COLOR = 'INVALID_COLOR';
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
 const EXAMPLE_APP: App = {
   ...DEFAULT_APP_DATA,
@@ -48,7 +58,8 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
-  githubSyncEnabled: false
+  githubSyncEnabled: false,
+  deletedAt: null
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -60,13 +71,23 @@ const EXAMPLE_USER_APP_ROLE = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: 'example_workspace_name'
+  }
 };
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
-const EXAMPLE_ENTITY_NAME = 'exampleEntityName';
-const EXAMPLE_ENTITY_DISPLAY_NAME = 'exampleEntityDisplayName';
-const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'exampleEntityPluralDisplayName';
+const EXAMPLE_ENTITY_NAME = 'ExampleEntityName';
+const EXAMPLE_ENTITY_DISPLAY_NAME = 'Example Entity Name';
+const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'Example Entity Names';
+const EXAMPLE_ENTITY_FIELD_NAME = 'exampleEntityFieldName';
+
+const EXAMPLE_BLOCK_ID = 'exampleBlockId';
+const EXAMPLE_BLOCK_DISPLAY_NAME = 'Example Entity Name';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
@@ -78,6 +99,33 @@ const EXAMPLE_ENTITY: Entity = {
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
 };
 
+const EXAMPLE_BLOCK: Block = {
+  id: EXAMPLE_BLOCK_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  appId: EXAMPLE_APP_ID,
+  displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
+  blockType: EnumBlockType.AppSettings,
+  parentBlock: null,
+  versionNumber: CURRENT_VERSION_NUMBER,
+  description: 'example block description'
+};
+
+const EXAMPLE_ENTITY_FIELD: EntityField = {
+  id: EXAMPLE_ENTITY_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_ENTITY_FIELD_NAME,
+  dataType: EnumDataType.SingleLineText,
+  description: 'SampleEntityDescription',
+  displayName: 'SampleEntityFieldDisplayName',
+  permanentId: 'SampleFieldPermanentId',
+  properties: {},
+  required: false,
+  unique: false,
+  searchable: false
+};
+
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   resourceId: EXAMPLE_ENTITY_ID,
   action: EnumPendingChangeAction.Create,
@@ -86,7 +134,16 @@ const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   resource: EXAMPLE_ENTITY
 };
 
+const EXAMPLE_CHANGED_BLOCK: PendingChange = {
+  resourceId: EXAMPLE_BLOCK_ID,
+  action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Block,
+  versionNumber: 1,
+  resource: EXAMPLE_BLOCK
+};
+
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
+const EXAMPLE_BLOCK_VERSION_ID = 'exampleBlockVersionId';
 const EXAMPLE_VERSION_NUMBER = 0;
 
 const EXAMPLE_ENTITY_VERSION: EntityVersion = {
@@ -98,6 +155,14 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+};
+
+const EXAMPLE_BLOCK_VERSION: BlockVersion = {
+  id: EXAMPLE_BLOCK_VERSION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  versionNumber: EXAMPLE_VERSION_NUMBER,
+  displayName: EXAMPLE_BLOCK_DISPLAY_NAME
 };
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -155,11 +220,24 @@ const prismaCommitCreateMock = jest.fn(() => {
 const entityServiceCreateVersionMock = jest.fn(
   async () => EXAMPLE_ENTITY_VERSION
 );
+const entityServiceCreateOneEntityMock = jest.fn(async () => EXAMPLE_ENTITY);
+const entityServiceCreateFieldByDisplayNameMock = jest.fn(
+  async () => EXAMPLE_ENTITY_FIELD
+);
 const entityServiceReleaseLockMock = jest.fn(async () => EXAMPLE_ENTITY);
 
 const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];
 });
+
+const blockServiceGetChangedBlocksMock = jest.fn(() => {
+  return [EXAMPLE_CHANGED_BLOCK];
+});
+const blockServiceCreateVersionMock = jest.fn(
+  async () => EXAMPLE_BLOCK_VERSION
+);
+
+const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
   id: 'USER_ENTITY_MOCK_ID'
@@ -200,6 +278,7 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             app: {
               create: prismaAppCreateMock,
+              findFirst: prismaAppFindOneMock,
               findUnique: prismaAppFindOneMock,
               findMany: prismaAppFindManyMock,
               delete: prismaAppDeleteMock,
@@ -217,6 +296,8 @@ describe('AppService', () => {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
             createVersion: entityServiceCreateVersionMock,
+            createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
+            createOneEntity: entityServiceCreateOneEntityMock,
             releaseLock: entityServiceReleaseLockMock,
             createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
@@ -228,6 +309,14 @@ describe('AppService', () => {
         {
           provide: GithubService,
           useValue: {}
+        },
+        {
+          provide: BlockService,
+          useValue: {
+            getChangedBlocks: blockServiceGetChangedBlocksMock,
+            createVersion: blockServiceCreateVersionMock,
+            releaseLock: blockServiceReleaseLockMock
+          }
         },
         {
           provide: EnvironmentService,
@@ -259,9 +348,9 @@ describe('AppService', () => {
     const prismaAppCreateAppArgs = {
       data: {
         ...createAppArgs.args.data,
-        organization: {
+        workspace: {
           connect: {
-            id: createAppArgs.user.organization?.id
+            id: createAppArgs.user.workspace?.id
           }
         },
         roles: {
@@ -278,8 +367,9 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID
@@ -298,6 +388,20 @@ describe('AppService', () => {
         entity: {
           connect: {
             id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
+    };
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
           }
         }
       }
@@ -328,10 +432,22 @@ describe('AppService', () => {
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(blockServiceCreateVersionMock).toBeCalledWith(
+      blockCreateVersionArgs
+    );
+
     expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
     expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
+      changedEntitiesArgs.appId,
+      changedEntitiesArgs.userId
+    );
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
       changedEntitiesArgs.appId,
       changedEntitiesArgs.userId
     );
@@ -358,9 +474,9 @@ describe('AppService', () => {
       data: {
         ...DEFAULT_APP_DATA,
         ...SAMPLE_APP_DATA,
-        organization: {
+        workspace: {
           connect: {
-            id: EXAMPLE_USER.organization?.id
+            id: EXAMPLE_USER.workspace?.id
           }
         },
         roles: {
@@ -384,8 +500,9 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID
@@ -408,7 +525,21 @@ describe('AppService', () => {
         }
       }
     };
-    const changedEntitiesArgs = {
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
+    const changesArgs = {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
     };
@@ -448,27 +579,268 @@ describe('AppService', () => {
       [createVersionArgs],
       [createVersionArgs]
     ]);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
+      [blockCreateVersionArgs],
+      [blockCreateVersionArgs]
+    ]);
     expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
     expect(entityServiceReleaseLockMock.mock.calls).toEqual([
       [EXAMPLE_ENTITY_ID],
       [EXAMPLE_ENTITY_ID]
     ]);
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_BLOCK_ID],
+      [EXAMPLE_BLOCK_ID]
+    ]);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
     expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId]
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
+    ]);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
+    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
+    ]);
+  });
+
+  it('should fail to create app with entities with a reserved name', async () => {
+    await expect(
+      service.createAppWithEntities(
+        {
+          app: SAMPLE_APP_DATA,
+          commitMessage: 'commitMessage',
+          entities: [
+            {
+              name: USER_ENTITY_NAME,
+              fields: [
+                {
+                  name: EXAMPLE_ENTITY_FIELD_NAME
+                }
+              ]
+            }
+          ]
+        },
+
+        EXAMPLE_USER
+      )
+    ).rejects.toThrow(new ReservedEntityNameError(USER_ENTITY_NAME));
+  });
+
+  it('should create app with entities', async () => {
+    const prismaAppCreateAppArgs = {
+      data: {
+        ...DEFAULT_APP_DATA,
+        ...SAMPLE_APP_DATA,
+        workspace: {
+          connect: {
+            id: EXAMPLE_USER.workspace?.id
+          }
+        },
+        roles: {
+          create: EXAMPLE_USER_APP_ROLE
+        }
+      }
+    };
+    const initialCommitArgs = {
+      data: {
+        message: INITIAL_COMMIT_MESSAGE,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
+    };
+    const commitMessage = 'CreateWithEntitiesCommitMessage';
+    const createSampleEntitiesCommitArgs = {
+      data: {
+        message: commitMessage,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
+    };
+    const findManyArgs = {
+      where: {
+        deletedAt: null,
+        id: EXAMPLE_APP_ID,
+        workspace: {
+          users: {
+            some: {
+              id: EXAMPLE_USER_ID
+            }
+          }
+        }
+      }
+    };
+    const createVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        entity: {
+          connect: {
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
+    };
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
+
+    const createOneEntityArgs = {
+      data: {
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
+        name: EXAMPLE_ENTITY_NAME,
+        pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+      }
+    };
+
+    const createFieldByDisplayNameArgs = {
+      data: {
+        entity: {
+          connect: {
+            id: EXAMPLE_ENTITY_ID
+          }
+        },
+        displayName: EXAMPLE_ENTITY_FIELD_NAME
+      }
+    };
+
+    const changesArgs = {
+      appId: EXAMPLE_APP_ID,
+      userId: EXAMPLE_USER_ID
+    };
+    await expect(
+      service.createAppWithEntities(
+        {
+          app: SAMPLE_APP_DATA,
+          commitMessage: commitMessage,
+          entities: [
+            {
+              name: EXAMPLE_ENTITY_DISPLAY_NAME,
+              fields: [
+                {
+                  name: EXAMPLE_ENTITY_FIELD_NAME
+                }
+              ]
+            }
+          ]
+        },
+
+        EXAMPLE_USER
+      )
+    ).resolves.toEqual(EXAMPLE_APP);
+    expect(prismaAppCreateMock).toBeCalledTimes(1);
+    expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
+
+    expect(prismaAppFindManyMock).toBeCalledTimes(3);
+    expect(prismaAppFindManyMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            deletedAt: null,
+            name: {
+              mode: QueryMode.Insensitive,
+              startsWith: SAMPLE_APP_DATA.name
+            },
+            workspaceId: EXAMPLE_WORKSPACE_ID
+          },
+          select: {
+            name: true
+          }
+        }
+      ],
+      [findManyArgs],
+      [findManyArgs]
+    ]);
+
+    expect(entityServiceCreateOneEntityMock).toBeCalledTimes(1);
+    expect(entityServiceCreateOneEntityMock).toBeCalledWith(
+      createOneEntityArgs,
+      EXAMPLE_USER
+    );
+
+    expect(entityServiceCreateFieldByDisplayNameMock).toBeCalledTimes(1);
+    expect(entityServiceCreateFieldByDisplayNameMock).toBeCalledWith(
+      createFieldByDisplayNameArgs,
+      EXAMPLE_USER
+    );
+
+    expect(prismaCommitCreateMock).toBeCalledTimes(2);
+    expect(prismaCommitCreateMock.mock.calls).toEqual([
+      [initialCommitArgs],
+      [createSampleEntitiesCommitArgs]
+    ]);
+    expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(entityServiceCreateVersionMock.mock.calls).toEqual([
+      [createVersionArgs],
+      [createVersionArgs]
+    ]);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
+      [blockCreateVersionArgs],
+      [blockCreateVersionArgs]
+    ]);
+    expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(entityServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_ENTITY_ID],
+      [EXAMPLE_ENTITY_ID]
+    ]);
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_BLOCK_ID],
+      [EXAMPLE_BLOCK_ID]
+    ]);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
+    expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
+    ]);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
+    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
     ]);
   });
 
   it('should find an app', async () => {
-    const args = { where: { id: EXAMPLE_APP_ID } };
+    const args = {
+      where: {
+        deletedAt: null,
+        id: EXAMPLE_APP_ID
+      }
+    };
     expect(await service.app(args)).toEqual(EXAMPLE_APP);
     expect(prismaAppFindOneMock).toBeCalledTimes(1);
     expect(prismaAppFindOneMock).toBeCalledWith(args);
   });
 
   it('should find many apps', async () => {
-    const args = { where: { id: EXAMPLE_APP_ID } };
+    const args = {
+      where: {
+        deletedAt: null,
+        id: EXAMPLE_APP_ID
+      }
+    };
     expect(await service.apps(args)).toEqual([EXAMPLE_APP]);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(args);
@@ -476,9 +848,16 @@ describe('AppService', () => {
 
   it('should delete an app', async () => {
     const args = { where: { id: EXAMPLE_APP_ID } };
+    const dateSpy = jest.spyOn(global, 'Date');
     expect(await service.deleteApp(args)).toEqual(EXAMPLE_APP);
-    expect(prismaAppDeleteMock).toBeCalledTimes(1);
-    expect(prismaAppDeleteMock).toBeCalledWith(args);
+    expect(prismaAppUpdateMock).toBeCalledTimes(1);
+    expect(prismaAppUpdateMock).toBeCalledWith({
+      ...args,
+      data: {
+        deletedAt: dateSpy.mock.instances[0],
+        name: prepareDeletedItemName(EXAMPLE_APP.name, EXAMPLE_APP.id)
+      }
+    });
   });
 
   it('should update an app', async () => {
@@ -501,8 +880,9 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID
@@ -526,7 +906,21 @@ describe('AppService', () => {
         }
       }
     };
-    const changedEntitiesArgs = {
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
+    const changesArgs = {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
     };
@@ -558,15 +952,56 @@ describe('AppService', () => {
     expect(prismaCommitCreateMock).toBeCalledWith(args);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(blockServiceCreateVersionMock).toBeCalledWith(
+      blockCreateVersionArgs
+    );
     expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
     expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
 
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
+
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
-      changedEntitiesArgs.appId,
-      changedEntitiesArgs.userId
+      changesArgs.appId,
+      changesArgs.userId
+    );
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
+      changesArgs.appId,
+      changesArgs.userId
     );
     expect(buildServiceCreateMock).toBeCalledTimes(1);
     expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
+  });
+
+  describe('deleted apps', () => {
+    beforeEach(() => {
+      EXAMPLE_APP.deletedAt = new Date();
+      prismaAppFindOneMock.mockImplementationOnce(() => {
+        throw new Error(INVALID_APP_ID);
+      });
+    });
+    afterEach(() => {
+      EXAMPLE_APP.deletedAt = null;
+    });
+
+    it('should fail to fetch a deleted app', async () => {
+      const args = { where: { id: EXAMPLE_APP_ID } };
+      await expect(service.app(args)).rejects.toThrow(
+        new Error(INVALID_APP_ID)
+      );
+    });
+
+    it('should fail to update a deleted app', async () => {
+      const args = {
+        data: { name: EXAMPLE_APP_NAME },
+        where: { id: EXAMPLE_APP_ID }
+      };
+      await expect(service.updateApp(args)).rejects.toThrow(
+        new Error(INVALID_APP_ID)
+      );
+    });
   });
 });

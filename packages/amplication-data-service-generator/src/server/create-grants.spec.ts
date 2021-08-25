@@ -59,6 +59,7 @@ const EXAMPLE_FIELD: EntityField = {
   displayName: "Example Field",
   name: "exampleField",
   required: true,
+  unique: true,
   searchable: false,
   properties: {},
   description: "Example Field Description",
@@ -68,7 +69,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: EntityPermission = {
   permissionFields: [
     {
       field: EXAMPLE_FIELD,
-      permissionFieldRoles: [EXAMPLE_PERMISSION_OTHER_ROLE],
+      permissionRoles: [EXAMPLE_PERMISSION_OTHER_ROLE],
     },
   ],
 };
@@ -77,7 +78,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD_WITH_NO_ROLES: EntityPerm
   permissionFields: [
     {
       field: EXAMPLE_FIELD,
-      permissionFieldRoles: null,
+      permissionRoles: null,
     },
   ],
 };

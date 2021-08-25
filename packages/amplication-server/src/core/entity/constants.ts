@@ -56,6 +56,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
     name: 'id',
     displayName: 'ID',
     description: 'An automatically created unique identifier of the entity',
+    unique: false,
     required: true,
     searchable: true,
     properties: {}
@@ -66,6 +67,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
     displayName: 'Created At',
     description:
       'An automatically created field of the time the entity created at',
+    unique: false,
     required: true,
     searchable: false,
     properties: {}
@@ -76,6 +78,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
     displayName: 'Updated At',
     description:
       'An automatically created field of the last time the entity updated at',
+    unique: false,
     required: true,
     searchable: false,
     properties: {}
@@ -107,6 +110,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         description:
           'An automatically created field of the first name of the user',
         required: false,
+        unique: false,
         searchable: true,
         properties: {
           maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
@@ -118,6 +122,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         displayName: 'Last Name',
         description:
           'An automatically created field of the last name of the user',
+        unique: false,
         required: false,
         searchable: true,
         properties: {
@@ -130,6 +135,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         displayName: 'Username',
         description:
           'An automatically created field of the username of the user',
+        unique: false,
         required: true,
         searchable: true,
         properties: {
@@ -142,6 +148,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         displayName: 'Password',
         description:
           'An automatically created field of the password of the user',
+        unique: false,
         required: true,
         searchable: false,
         properties: {
@@ -153,6 +160,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         name: 'roles',
         displayName: 'Roles',
         description: 'An automatically created field of the roles of the user',
+        unique: false,
         required: true,
         searchable: false,
         properties: {}
@@ -160,3 +168,48 @@ export const DEFAULT_ENTITIES: EntityData[] = [
     ]
   }
 ];
+
+export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
+  [key in EnumDataType]: JsonObject;
+} = {
+  [EnumDataType.SingleLineText]: {
+    maxLength: 1000
+  },
+  [EnumDataType.MultiLineText]: {
+    maxLength: 1000
+  },
+  [EnumDataType.Email]: {},
+  [EnumDataType.WholeNumber]: {
+    minimumValue: -999999999,
+    maximumValue: 999999999
+  },
+  [EnumDataType.DecimalNumber]: {
+    minimumValue: -999999999,
+    maximumValue: 999999999,
+    precision: 2
+  },
+  [EnumDataType.DateTime]: {
+    timeZone: 'localTime',
+    dateOnly: false
+  },
+  [EnumDataType.Lookup]: {
+    relatedEntityId: '',
+    allowMultipleSelection: false,
+    relatedFieldId: ''
+  },
+  [EnumDataType.Boolean]: {},
+  [EnumDataType.Json]: {},
+  [EnumDataType.OptionSet]: {
+    options: [{ label: 'Option 1', value: 'Option1' }]
+  },
+  [EnumDataType.MultiSelectOptionSet]: {
+    options: [{ label: 'Option 1', value: 'Option1' }]
+  },
+  [EnumDataType.GeographicLocation]: {},
+  [EnumDataType.CreatedAt]: {},
+  [EnumDataType.UpdatedAt]: {},
+  [EnumDataType.Id]: {},
+  [EnumDataType.Username]: {},
+  [EnumDataType.Password]: {},
+  [EnumDataType.Roles]: {}
+};

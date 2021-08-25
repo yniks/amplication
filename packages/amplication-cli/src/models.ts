@@ -2,6 +2,10 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -109,6 +113,23 @@ export type AppCreateInput = {
   color?: Maybe<Scalars['String']>;
 };
 
+export type AppCreateWithEntitiesEntityInput = {
+  name: Scalars['String'];
+  fields: Array<AppCreateWithEntitiesFieldInput>;
+  relationsToEntityIndex?: Maybe<Array<Scalars['Int']>>;
+};
+
+export type AppCreateWithEntitiesFieldInput = {
+  name: Scalars['String'];
+  dataType?: Maybe<EnumDataType>;
+};
+
+export type AppCreateWithEntitiesInput = {
+  app: AppCreateInput;
+  entities: Array<AppCreateWithEntitiesEntityInput>;
+  commitMessage: Scalars['String'];
+};
+
 export type AppEnableSyncWithGithubRepoInput = {
   /** The full name of the repo in the format org-name/repo-name */
   githubRepo: Scalars['String'];
@@ -166,6 +187,37 @@ export type AppRoleWhereInput = {
   app?: Maybe<WhereUniqueInput>;
 };
 
+export type AppSettings = IBlock & {
+  __typename?: 'AppSettings';
+  id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  parentBlock?: Maybe<Block>;
+  displayName: Scalars['String'];
+  description: Scalars['String'];
+  blockType: EnumBlockType;
+  versionNumber: Scalars['Float'];
+  inputParameters: Array<BlockInputOutput>;
+  outputParameters: Array<BlockInputOutput>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  dbHost: Scalars['String'];
+  dbName: Scalars['String'];
+  dbUser: Scalars['String'];
+  dbPassword: Scalars['String'];
+  dbPort: Scalars['Int'];
+};
+
+export type AppSettingsUpdateInput = {
+  displayName?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  dbHost: Scalars['String'];
+  dbName: Scalars['String'];
+  dbUser: Scalars['String'];
+  dbPassword: Scalars['String'];
+  dbPort: Scalars['Int'];
+};
+
 export type AppUpdateInput = {
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
@@ -216,9 +268,20 @@ export type Block = {
   app?: Maybe<App>;
   parentBlock?: Maybe<Block>;
   displayName: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   blockType: EnumBlockType;
   versionNumber?: Maybe<Scalars['Float']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  versions?: Maybe<Array<BlockVersion>>;
+  lockedByUser: Array<User>;
+};
+
+export type BlockVersionsArgs = {
+  where?: Maybe<BlockVersionWhereInput>;
+  orderBy?: Maybe<BlockVersionOrderByInput>;
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
 };
 
 export type BlockInputOutput = {
@@ -261,14 +324,12 @@ export type BlockVersion = {
   id: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  displayName: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   block: Block;
   versionNumber: Scalars['Int'];
-  label: Scalars['String'];
-};
-
-export type BlockVersionCreateInput = {
-  label: Scalars['String'];
-  block: WhereParentIdInput;
+  commit?: Maybe<Commit>;
+  settings?: Maybe<Scalars['JSONObject']>;
 };
 
 export type BlockVersionOrderByInput = {
@@ -418,6 +479,8 @@ export type ConnectorRestApi = IBlock & {
   versionNumber: Scalars['Float'];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
   authenticationType: EnumConnectorRestApiAuthenticationType;
   privateKeyAuthenticationSettings?: Maybe<PrivateKeyAuthenticationSettings>;
   httpBasicAuthenticationSettings?: Maybe<HttpBasicAuthenticationSettings>;
@@ -435,6 +498,8 @@ export type ConnectorRestApiCall = IBlock & {
   versionNumber: Scalars['Float'];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
   url: Scalars['String'];
 };
 
@@ -609,6 +674,7 @@ export type EntityField = {
   dataType: EnumDataType;
   properties?: Maybe<Scalars['JSONObject']>;
   required: Scalars['Boolean'];
+  unique: Scalars['Boolean'];
   searchable: Scalars['Boolean'];
   description?: Maybe<Scalars['String']>;
   position?: Maybe<Scalars['Int']>;
@@ -616,6 +682,7 @@ export type EntityField = {
 
 export type EntityFieldCreateByDisplayNameInput = {
   displayName: Scalars['String'];
+  dataType?: Maybe<EnumDataType>;
   entity: WhereParentIdInput;
 };
 
@@ -625,6 +692,7 @@ export type EntityFieldCreateInput = {
   dataType: EnumDataType;
   properties: Scalars['JSONObject'];
   required: Scalars['Boolean'];
+  unique: Scalars['Boolean'];
   searchable: Scalars['Boolean'];
   description: Scalars['String'];
   entity: WhereParentIdInput;
@@ -646,6 +714,7 @@ export type EntityFieldOrderByInput = {
   displayName?: Maybe<SortOrder>;
   dataType?: Maybe<SortOrder>;
   required?: Maybe<SortOrder>;
+  unique?: Maybe<SortOrder>;
   searchable?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
   position?: Maybe<SortOrder>;
@@ -657,6 +726,7 @@ export type EntityFieldUpdateInput = {
   dataType?: Maybe<EnumDataType>;
   properties?: Maybe<Scalars['JSONObject']>;
   required?: Maybe<Scalars['Boolean']>;
+  unique?: Maybe<Scalars['Boolean']>;
   searchable?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   position?: Maybe<Scalars['Int']>;
@@ -671,6 +741,7 @@ export type EntityFieldWhereInput = {
   displayName?: Maybe<StringFilter>;
   dataType?: Maybe<EnumDataTypeFilter>;
   required?: Maybe<BooleanFilter>;
+  unique?: Maybe<BooleanFilter>;
   searchable?: Maybe<BooleanFilter>;
   description?: Maybe<StringFilter>;
 };
@@ -697,6 +768,8 @@ export type EntityPage = IBlock & {
   versionNumber: Scalars['Float'];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
   entityId: Scalars['String'];
   pageType: EnumEntityPageType;
   singleRecordSettings?: Maybe<EntityPageSingleRecordSettings>;
@@ -797,7 +870,7 @@ export type EntityPermissionField = {
   fieldPermanentId: Scalars['String'];
   entityVersionId: Scalars['String'];
   field: EntityField;
-  permissionFieldRoles?: Maybe<Array<EntityPermissionRole>>;
+  permissionRoles?: Maybe<Array<EntityPermissionRole>>;
 };
 
 export type EntityPermissionFieldWhereUniqueInput = {
@@ -1070,6 +1143,8 @@ export type IBlock = {
   versionNumber: Scalars['Float'];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
 };
 
 export type IEntityPageSettings = {
@@ -1100,8 +1175,9 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   updateAccount: Account;
-  deleteOrganization?: Maybe<Organization>;
-  updateOrganization?: Maybe<Organization>;
+  deleteWorkspace?: Maybe<Workspace>;
+  updateWorkspace?: Maybe<Workspace>;
+  createWorkspace?: Maybe<Workspace>;
   inviteUser?: Maybe<User>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
@@ -1120,9 +1196,11 @@ export type Mutation = {
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
+  updateAppSettings?: Maybe<AppSettings>;
   createBuild: Build;
   createDeployment: Deployment;
   createApp: App;
+  createAppWithEntities: App;
   deleteApp?: Maybe<App>;
   updateApp?: Maybe<App>;
   commit?: Maybe<Commit>;
@@ -1137,10 +1215,9 @@ export type Mutation = {
   createApiToken: ApiToken;
   changePassword: Account;
   deleteApiToken: ApiToken;
-  setCurrentOrganization: Auth;
+  setCurrentWorkspace: Auth;
   createConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApi: ConnectorRestApi;
-  createBlockVersion: Block;
   createConnectorRestApiCall: ConnectorRestApiCall;
   updateConnectorRestApiCall: ConnectorRestApiCall;
   createEntityPage: EntityPage;
@@ -1151,13 +1228,17 @@ export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
 
-export type MutationDeleteOrganizationArgs = {
+export type MutationDeleteWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationUpdateOrganizationArgs = {
-  data: OrganizationUpdateInput;
+export type MutationUpdateWorkspaceArgs = {
+  data: WorkspaceUpdateInput;
   where: WhereUniqueInput;
+};
+
+export type MutationCreateWorkspaceArgs = {
+  data: WorkspaceCreateInput;
 };
 
 export type MutationInviteUserArgs = {
@@ -1242,6 +1323,11 @@ export type MutationUpdateAppRoleArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationUpdateAppSettingsArgs = {
+  data: AppSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
 };
@@ -1252,6 +1338,10 @@ export type MutationCreateDeploymentArgs = {
 
 export type MutationCreateAppArgs = {
   data: AppCreateInput;
+};
+
+export type MutationCreateAppWithEntitiesArgs = {
+  data: AppCreateWithEntitiesInput;
 };
 
 export type MutationDeleteAppArgs = {
@@ -1313,7 +1403,7 @@ export type MutationDeleteApiTokenArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationSetCurrentOrganizationArgs = {
+export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
 };
 
@@ -1324,10 +1414,6 @@ export type MutationCreateConnectorRestApiArgs = {
 export type MutationUpdateConnectorRestApiArgs = {
   data: BlockUpdateInput;
   where: WhereUniqueInput;
-};
-
-export type MutationCreateBlockVersionArgs = {
-  data: BlockVersionCreateInput;
 };
 
 export type MutationCreateConnectorRestApiCallArgs = {
@@ -1346,24 +1432,6 @@ export type MutationCreateEntityPageArgs = {
 export type MutationUpdateEntityPageArgs = {
   data: EntityPageUpdateInput;
   where: WhereUniqueInput;
-};
-
-export type Organization = {
-  __typename?: 'Organization';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  defaultTimeZone: Scalars['String'];
-  address: Scalars['String'];
-  apps: Array<App>;
-  users: Array<User>;
-};
-
-export type OrganizationUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  defaultTimeZone?: Maybe<Scalars['String']>;
-  address?: Maybe<Scalars['String']>;
 };
 
 export type PendingChange = {
@@ -1412,11 +1480,16 @@ export type PropertySelectorInput = {
 export type Query = {
   __typename?: 'Query';
   account: Account;
-  organization?: Maybe<Organization>;
+  workspaces: Array<Workspace>;
+  workspace?: Maybe<Workspace>;
+  currentWorkspace?: Maybe<Workspace>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
+  blocks: Array<Block>;
+  block: Block;
   appRole?: Maybe<AppRole>;
   appRoles: Array<AppRole>;
+  appSettings: AppSettings;
   builds: Array<Build>;
   build: Build;
   action: Action;
@@ -1433,15 +1506,13 @@ export type Query = {
   userApiTokens: Array<ApiToken>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
-  blockVersions: Array<BlockVersion>;
-  blocks: Array<Block>;
   ConnectorRestApiCall?: Maybe<ConnectorRestApiCall>;
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
 };
 
-export type QueryOrganizationArgs = {
+export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1456,6 +1527,17 @@ export type QueryEntitiesArgs = {
   take?: Maybe<Scalars['Int']>;
 };
 
+export type QueryBlocksArgs = {
+  where?: Maybe<BlockWhereInput>;
+  orderBy?: Maybe<BlockOrderByInput>;
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+};
+
+export type QueryBlockArgs = {
+  where: WhereUniqueInput;
+};
+
 export type QueryAppRoleArgs = {
   where: WhereUniqueInput;
   version?: Maybe<Scalars['Float']>;
@@ -1466,6 +1548,10 @@ export type QueryAppRolesArgs = {
   orderBy?: Maybe<AppRoleOrderByInput>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
+};
+
+export type QueryAppSettingsArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryBuildsArgs = {
@@ -1531,7 +1617,6 @@ export type QueryCommitsArgs = {
 
 export type QueryConnectorRestApiArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
 };
 
 export type QueryConnectorRestApisArgs = {
@@ -1541,23 +1626,8 @@ export type QueryConnectorRestApisArgs = {
   take?: Maybe<Scalars['Int']>;
 };
 
-export type QueryBlockVersionsArgs = {
-  where?: Maybe<BlockVersionWhereInput>;
-  orderBy?: Maybe<BlockVersionOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-};
-
-export type QueryBlocksArgs = {
-  where?: Maybe<BlockWhereInput>;
-  orderBy?: Maybe<BlockOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-};
-
 export type QueryConnectorRestApiCallArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
 };
 
 export type QueryConnectorRestApiCallsArgs = {
@@ -1569,7 +1639,6 @@ export type QueryConnectorRestApiCallsArgs = {
 
 export type QueryEntityPageArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
 };
 
 export type QueryEntityPagesArgs = {
@@ -1596,9 +1665,7 @@ export type SignupInput = {
   password: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
-  organizationName: Scalars['String'];
-  defaultTimeZone: Scalars['String'];
-  address: Scalars['String'];
+  workspaceName: Scalars['String'];
 };
 
 export enum SortOrder {
@@ -1632,8 +1699,9 @@ export type User = {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   account?: Maybe<Account>;
-  organization?: Maybe<Organization>;
+  workspace?: Maybe<Workspace>;
   userRoles?: Maybe<Array<UserRole>>;
+  isOwner: Scalars['Boolean'];
 };
 
 export type UserRole = {
@@ -1650,4 +1718,22 @@ export type WhereParentIdInput = {
 
 export type WhereUniqueInput = {
   id: Scalars['String'];
+};
+
+export type Workspace = {
+  __typename?: 'Workspace';
+  id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  apps: Array<App>;
+  users: Array<User>;
+};
+
+export type WorkspaceCreateInput = {
+  name: Scalars['String'];
+};
+
+export type WorkspaceUpdateInput = {
+  name?: Maybe<Scalars['String']>;
 };

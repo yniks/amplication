@@ -23,7 +23,7 @@ async function main() {
             include: {
               app: {
                 include: {
-                  organization: {
+                  workspace: {
                     include: {
                       users: true
                     }
@@ -49,7 +49,7 @@ async function main() {
     fieldsToUpdate.map(async field => {
       const properties = (field.properties as unknown) as types.Lookup;
       const { entity } = field.entityVersion;
-      const [user] = entity.app.organization.users;
+      const [user] = entity.app.workspace.users;
       console.info(`Adding related field for ${field.id}...`);
       let relatedFieldName = camelCase(entity.name);
       let relatedFieldDisplayName = entity.name;
@@ -115,6 +115,7 @@ async function main() {
       try {
         relatedField = await client.entityField.create({
           data: {
+            unique: false,
             required: false,
             searchable: false,
             description: '',
@@ -140,6 +141,7 @@ async function main() {
       } catch (error) {
         relatedField = await client.entityField.create({
           data: {
+            unique: false,
             required: false,
             searchable: false,
             description: '',

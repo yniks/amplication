@@ -199,6 +199,7 @@ export const EntityPermissionFields = ({
       </div>
       {permission.permissionFields?.map((field) => (
         <EntityPermissionField
+          key={field.id}
           entityId={entityId}
           permission={permission}
           actionDisplayName={actionDisplayName}
@@ -230,7 +231,7 @@ const ADD_FIELD = gql`
         name
         displayName
       }
-      permissionFieldRoles {
+      permissionRoles {
         id
         appRole {
           id

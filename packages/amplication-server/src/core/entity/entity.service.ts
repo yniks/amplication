@@ -38,7 +38,8 @@ import {
   USER_ENTITY_FIELDS,
   DEFAULT_ENTITIES,
   DEFAULT_PERMISSIONS,
-  SYSTEM_DATA_TYPES
+  SYSTEM_DATA_TYPES,
+  DATA_TYPE_TO_DEFAULT_PROPERTIES
 } from './constants';
 import {
   prepareDeletedItemName,
@@ -47,7 +48,8 @@ import {
 
 import {
   EnumPendingChangeResourceType,
-  EnumPendingChangeAction
+  EnumPendingChangeAction,
+  PendingChange
 } from '../app/dto';
 
 import {
@@ -133,10 +135,11 @@ const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
 
 const BASE_FIELD: Pick<
   EntityField,
-  'required' | 'searchable' | 'description'
+  'required' | 'searchable' | 'description' | 'unique'
 > = {
   required: false,
-  searchable: false,
+  unique: false,
+  searchable: true,
   description: ''
 };
 
@@ -485,7 +488,7 @@ export class EntityService {
     });
   }
 
-  async getChangedEntitiesByCommit(commitId: string) {
+  async getChangedEntitiesByCommit(commitId: string): Promise<PendingChange[]> {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
         versions: {
@@ -882,33 +885,6 @@ export class EntityService {
                 }
               };
             })
-          },
-          permissionFields: {
-            create: permission.permissionFields.map(permissionField => {
-              return {
-                field: {
-                  connect: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    entityVersionId_permanentId: {
-                      entityVersionId: targetVersionId,
-                      permanentId: permissionField.fieldPermanentId
-                    }
-                  }
-                },
-                permissionRoles: {
-                  connect: permissionField.permissionRoles.map(fieldRole => {
-                    return {
-                      // eslint-disable-next-line @typescript-eslint/naming-convention
-                      entityVersionId_action_appRoleId: {
-                        action: fieldRole.action,
-                        entityVersionId: targetVersionId,
-                        appRoleId: fieldRole.appRoleId
-                      }
-                    };
-                  })
-                }
-              };
-            })
           }
         };
       })
@@ -922,6 +898,49 @@ export class EntityService {
         permissions: createPermissionsData
       }
     });
+
+    await Promise.all(
+      sourceVersion.permissions.map(permission => {
+        return this.prisma.entityPermission.update({
+          where: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityVersionId_action: {
+              action: permission.action,
+              entityVersionId: targetVersionId
+            }
+          },
+          data: {
+            permissionFields: {
+              create: permission.permissionFields.map(permissionField => {
+                return {
+                  field: {
+                    connect: {
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      entityVersionId_permanentId: {
+                        entityVersionId: targetVersionId,
+                        permanentId: permissionField.fieldPermanentId
+                      }
+                    }
+                  },
+                  permissionRoles: {
+                    connect: permissionField.permissionRoles.map(fieldRole => {
+                      return {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        entityVersionId_action_appRoleId: {
+                          action: fieldRole.action,
+                          entityVersionId: targetVersionId,
+                          appRoleId: fieldRole.appRoleId
+                        }
+                      };
+                    })
+                  }
+                };
+              })
+            }
+          }
+        });
+      })
+    );
 
     return targetVersion;
   }
@@ -1469,6 +1488,12 @@ export class EntityService {
     return this.createField(createFieldArgs, user);
   }
 
+  /**
+   * Created the field input with the relevant properties. When dataType is not provided, it will be guessed based on the field name
+   * @param args
+   * @param entity
+   * @returns
+   */
   async createFieldCreateInputByDisplayName(
     args: CreateOneEntityFieldByDisplayNameArgs,
     entity: Entity
@@ -1476,44 +1501,34 @@ export class EntityService {
     const { displayName } = args.data;
     const lowerCaseName = displayName.toLowerCase();
     const name = camelCase(displayName);
-    if (lowerCaseName.includes('date')) {
-      return {
-        name,
-        dataType: EnumDataType.DateTime,
-        properties: {
-          timeZone: 'localTime',
-          dateOnly: false
-        }
-      };
-    } else if (lowerCaseName.includes('description')) {
-      return {
-        name,
-        dataType: EnumDataType.MultiLineText,
-        properties: {
-          maxLength: 1000
-        }
-      };
+
+    let dataType: EnumDataType | null = null;
+
+    if (args.data.dataType) {
+      dataType = args.data.dataType as EnumDataType;
+    } else if (lowerCaseName.includes('date')) {
+      dataType = EnumDataType.DateTime;
+    } else if (
+      lowerCaseName.includes('description') ||
+      lowerCaseName.includes('comments')
+    ) {
+      dataType = EnumDataType.MultiLineText;
     } else if (lowerCaseName.includes('email')) {
-      return {
-        name,
-        dataType: EnumDataType.Email,
-        properties: {}
-      };
+      dataType = EnumDataType.Email;
     } else if (lowerCaseName.includes('status')) {
-      return {
-        name,
-        dataType: EnumDataType.OptionSet,
-        properties: {
-          options: [{ label: 'Option 1', value: 'Option1' }]
-        }
-      };
+      dataType = EnumDataType.OptionSet;
     } else if (lowerCaseName.startsWith('is')) {
-      return {
-        name,
-        dataType: EnumDataType.Boolean,
-        properties: {}
-      };
-    } else {
+      dataType = EnumDataType.Boolean;
+    } else if (lowerCaseName.includes('price')) {
+      dataType = EnumDataType.DecimalNumber;
+    } else if (
+      lowerCaseName.includes('quantity') ||
+      lowerCaseName.includes('qty')
+    ) {
+      dataType = EnumDataType.WholeNumber;
+    }
+
+    if (dataType === EnumDataType.Lookup || dataType === null) {
       // Find an entity with the field's display name
       const relatedEntity = await this.findEntityByNames(name, entity.appId);
       // If found attempt to create a lookup field
@@ -1549,12 +1564,12 @@ export class EntityService {
         }
       }
     }
+
     return {
       name,
-      dataType: EnumDataType.SingleLineText,
-      properties: {
-        maxLength: 1000
-      }
+      dataType: dataType || EnumDataType.SingleLineText,
+      properties:
+        DATA_TYPE_TO_DEFAULT_PROPERTIES[dataType || EnumDataType.SingleLineText]
     };
   }
 
@@ -2048,27 +2063,24 @@ export function createEntityNamesWhereInput(
   return {
     appId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    AND: [
+    OR: [
+      {
+        displayName: {
+          equals: name,
+          mode: Prisma.QueryMode.insensitive
+        }
+      },
+      {
+        pluralDisplayName: {
+          equals: name,
+          mode: Prisma.QueryMode.insensitive
+        }
+      },
       {
         name: {
           equals: name,
           mode: Prisma.QueryMode.insensitive
-        },
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          {
-            displayName: {
-              equals: name,
-              mode: Prisma.QueryMode.insensitive
-            }
-          },
-          {
-            pluralDisplayName: {
-              equals: name,
-              mode: Prisma.QueryMode.insensitive
-            }
-          }
-        ]
+        }
       }
     ]
   };

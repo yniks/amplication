@@ -20,6 +20,7 @@ export type Values = {
   name: string;
   displayName: string;
   dataType: models.EnumDataType;
+  unique: boolean;
   required: boolean;
   searchable: boolean;
   description: string | null;
@@ -56,6 +57,7 @@ export const INITIAL_VALUES: Values = {
   name: "",
   displayName: "",
   dataType: models.EnumDataType.SingleLineText,
+  unique: false,
   required: false,
   searchable: false,
   description: "",
@@ -132,6 +134,13 @@ const EntityFieldForm = ({
               label="Description"
               disabled={isDisabled ? isDisabled : isSystemData}
             />
+            <div>
+              <ToggleField
+                name="unique"
+                label="Unique Field"
+                disabled={isDisabled}
+              />
+            </div>
             <div>
               <ToggleField
                 name="required"

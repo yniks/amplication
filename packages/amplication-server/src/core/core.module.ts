@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 
 import { AccountModule } from './account/account.module';
-import { OrganizationModule } from './organization/organization.module';
+import { WorkspaceModule } from './workspace/workspace.module';
 import { AppModule } from './app/app.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
@@ -20,10 +20,11 @@ import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
 import { GithubModule } from './github/github.module';
+import { AppSettingsModule } from './appSettings/appSettings.module';
 @Module({
   imports: [
     AccountModule,
-    OrganizationModule,
+    WorkspaceModule,
     AppModule,
     UserModule,
     AuthModule,
@@ -40,12 +41,13 @@ import { GithubModule } from './github/github.module';
     EnvironmentModule,
     CommitModule,
     SystemModule,
-    GithubModule
+    GithubModule,
+    AppSettingsModule
   ],
   providers: [],
   exports: [
     AccountModule,
-    OrganizationModule,
+    WorkspaceModule,
     AppModule,
     UserModule,
     AuthModule,
@@ -60,7 +62,8 @@ import { GithubModule } from './github/github.module';
     DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    GithubModule
+    GithubModule,
+    AppSettingsModule
   ]
 })
 export class CoreModule {}

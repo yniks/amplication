@@ -11,6 +11,7 @@ import { Formik, Form } from "formik";
 import WelcomePage from "../Layout/WelcomePage";
 import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
+import { SIGN_IN_PAGE_CONTENT, DEFAULT_PAGE_SOURCE } from "../User/constants";
 import "./Signup.scss";
 
 type Values = {
@@ -19,11 +20,12 @@ type Values = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  organizationName: string;
-  address: string;
+  workspaceName: string;
 };
 
 const CLASS_NAME = "signup-page";
+
+const PAGE_CONTENT = SIGN_IN_PAGE_CONTENT[DEFAULT_PAGE_SOURCE];
 
 const INITIAL_VALUES: Values = {
   email: "",
@@ -31,8 +33,7 @@ const INITIAL_VALUES: Values = {
   confirmPassword: "",
   firstName: "",
   lastName: "",
-  organizationName: "",
-  address: "",
+  workspaceName: "",
 };
 
 const Signup = () => {
@@ -42,12 +43,11 @@ const Signup = () => {
 
   const handleSubmit = useCallback(
     (values) => {
-      const { confirmPassword, ...data } = values;
+      const { confirmPassword, ...data } = values; // eslint-disable-line @typescript-eslint/no-unused-vars
       signup({
         variables: {
           data: {
             ...data,
-            defaultTimeZone: "GMT+3",
           },
         },
       }).catch(console.error);
@@ -59,7 +59,7 @@ const Signup = () => {
     if (data) {
       setToken(data.signup.token);
       // @ts-ignore
-      const { from } = location.state || { from: { pathname: "/" } };
+      const { from } = location.state || { from: { pathname: "/create-app" } };
       history.replace(from);
     }
   }, [data, history, location]);
@@ -67,7 +67,7 @@ const Signup = () => {
   const errorMessage = formatError(error);
 
   return (
-    <WelcomePage>
+    <WelcomePage {...PAGE_CONTENT}>
       <span className={`${CLASS_NAME}__title`}>Sign Up</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
@@ -106,10 +106,10 @@ const Signup = () => {
             autoComplete="family-name"
           />
           <TextField
-            label="Organization"
-            name="organizationName"
+            label="Workspace"
+            name="workspaceName"
             type="text"
-            autoComplete="organization"
+            autoComplete="workspace"
           />
 
           <Button>Continue</Button>

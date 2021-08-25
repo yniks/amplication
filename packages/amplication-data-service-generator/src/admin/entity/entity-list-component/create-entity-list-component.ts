@@ -8,124 +8,74 @@ import {
 } from "../../../types";
 import {
   addImports,
-  getNamedProperties,
   importContainedIdentifiers,
   importNames,
   interpolate,
 } from "../../../util/ast";
+import { getFieldsFromDTOWithoutToManyRelations } from "../../../util/entity";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";
+import {
+  REACT_ADMIN_MODULE,
+  REACT_ADMIN_COMPONENTS_ID,
+} from "../react-admin.util";
+
+const IMPORTABLE_IDS = {
+  "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
+  [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
+};
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
-
-const ITEM_ID = builders.identifier("item");
-const IMPORTABLE_IDS = {
-  "@amplication/design-system": [
-    builders.identifier("TimeSince"),
-    builders.identifier("CircleIcon"),
-    builders.identifier("EnumCircleIconStyle"),
-  ],
-};
 
 export async function createEntityListComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToPath: Record<string, string>,
-  entityToResource: Record<string, string>,
-  dtoNameToPath: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}List`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const path = entityToPath[entity.name];
-  const resource = entityToResource[entity.name];
-  const entityDTO = dtos[entity.name].entity;
-  const fieldNameToField = Object.fromEntries(
-    entity.fields.map((field) => [field.name, field])
-  );
-  const entityDTOProperties = getNamedProperties(entityDTO);
-  const fields = entityDTOProperties.map(
-    (property) => fieldNameToField[property.key.name]
-  );
-  const nonIdFields = fields.filter(
-    (field) => field.dataType !== EnumDataType.Id
-  );
-  const idField = fields.find(
-    (field) => field.dataType === EnumDataType.Id
-  ) as EntityField;
-  const relationFields = nonIdFields.filter(
+
+  //get the fields from the DTO object excluding toMany relations
+  const fields = getFieldsFromDTOWithoutToManyRelations(entity, dtos);
+
+  const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
-  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
 
   interpolate(file, {
-    ENTITY: localEntityDTOId,
     ENTITY_LIST: builders.identifier(name),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
     ),
-    ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
-    PATH: builders.stringLiteral(path),
-    RESOURCE: builders.stringLiteral(resource),
-    FIELDS_VALUE: builders.arrayExpression(
-      [idField, ...nonIdFields].map((field) => {
-        return builders.objectExpression([
-          builders.property(
-            "init",
-            builders.identifier("name"),
-            builders.stringLiteral(field.name)
-          ),
-          builders.property(
-            "init",
-            builders.identifier("title"),
-            builders.stringLiteral(field.displayName)
-          ),
-          builders.property(
-            "init",
-            builders.identifier("sortable"),
-            builders.booleanLiteral(false)
-          ),
-        ]);
-      })
-    ),
-    CELLS: jsxFragment`<>${nonIdFields.map(
-      (field) =>
-        jsxElement`<DataGridCell>${createFieldValue(
-          field,
-          ITEM_ID,
-          entityToTitleComponent
-        )}</DataGridCell>`
+    CELLS: jsxFragment`<>${fields.map(
+      (field) => jsxElement`${createFieldValue(field)}`
     )}</>`,
   });
 
-  // Add imports for entities select components
+  // Add imports for entities title components
   addImports(
     file,
     relationFields.map((field) => {
       const { relatedEntity } = field.properties as LookupResolvedProperties;
-      const relatedEntitySelectComponent =
+      const relatedEntityTitleComponent =
         entityToTitleComponent[relatedEntity.name];
       return importNames(
-        [builders.identifier(relatedEntitySelectComponent.name)],
-        relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)
+        [
+          builders.identifier(
+            `${relatedEntity.name.toUpperCase()}_TITLE_FIELD`
+          ),
+        ],
+        relativeImportPath(modulePath, relatedEntityTitleComponent.modulePath)
       );
     })
   );
 
-  addImports(file, [
-    builders.importDeclaration(
-      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
-      )
-    ),
-    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
-  ]);
+  addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 
   return { name, file, modulePath };
 }

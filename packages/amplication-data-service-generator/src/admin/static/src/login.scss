@@ -1,65 +1,119 @@
+:root {
+  --surface: #15192c; /*dark: black100 */
+  --white: #15192c; /*dark: black100 */
+
+  --black100: #ffffff; /*dark: white */
+  --black90: #b7bac7; /*dark: black10 */
+  --black80: #a3a8b8; /*dark: black20 */
+  --black60: #80869d; /*dark: black30 */
+  --black40: #686f8c; /*dark: black40 */
+  --black30: #515873; /*dark: black50 */
+  --black20: #444b66; /*dark: black60 */
+  --black10: #373d57; /*dark: black70 */
+  --black5: #2c3249; /*dark: black80 */
+  --black2: #22273c; /*dark: black90 */
+
+  --primary: #7950ed;
+}
+
 .login-page {
   height: 100vh;
   width: 100%;
+  background-color: var(--surface);
+  color: var(--black100);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
-  .options-container {
+  &__wrapper {
     display: flex;
     align-items: stretch;
     justify-content: center;
+    flex-direction: row;
+  }
 
-    .divider {
-      margin: 0 var(--double-spacing);
-      position: relative;
-      display: flex;
-      align-items: center;
+  &__box {
+    text-align: center;
+    width: 340px;
+    background-color: var(--black2);
+    border-radius: 4px;
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--black10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
 
-      &:before,
-      &:after {
-        content: "";
-        position: absolute;
-        top: 10%;
-        height: calc(40% - var(--double-spacing));
-        border-right: 1px solid var(--black20);
-        width: 0;
-        left: 50%;
-      }
+    h2 {
+      font-size: 18px;
+    }
+    img {
+      width: 48px;
+    }
 
-      &:after {
-        top: auto;
-        bottom: 10%;
+    &__message {
+      color: var(--black80);
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    button,
+    .MuiButton-contained {
+      box-sizing: border-box;
+      background-color: var(--primary);
+      width: 300px;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      margin-top: auto;
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: var(--primary);
       }
     }
-    .amp-panel {
-      padding: var(--triple-spacing);
-      margin-bottom: 0;
-      flex: 1;
-      width: 400px;
+  }
 
-      &__header {
-        justify-content: center;
-        margin-bottom: var(--double-spacing);
-      }
-      hr {
-        margin: var(--triple-spacing) 0;
-        border: none;
-        border-top: 1px solid var(--black10);
-      }
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
 
-      .message {
+    label {
+      span {
+        display: block;
+        text-align: left;
+        font-size: 12px;
         color: var(--black60);
-        margin: auto;
-        margin-bottom: var(--double-spacing);
-        margin-top: var(--double-spacing);
-        text-align: center;
       }
     }
 
-    .amp-button {
-      width: 100%;
-      margin-top: var(--double-spacing);
+    input {
+      box-sizing: border-box;
+      background-color: var(--white);
+      border: 1px solid var(--black10);
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      outline: none;
+      border-radius: 4px;
+      width: 300px;
+      color: var(--black100);
+      &:hover,
+      &:active,
+      &:focus {
+        border: 1px solid var(--black100);
+      }
+    }
+  }
+
+  &__read-more {
+    color: var(--black80);
+    a {
+      color: var(--black100);
+      text-decoration: none;
     }
   }
 }

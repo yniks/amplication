@@ -12,28 +12,30 @@ export class PermissionsService {
     resourceType: AuthorizableResourceParameter,
     resourceId: string
   ): Promise<boolean> {
-    const { organization } = user;
+    const { workspace } = user;
 
     const checkByAppParameters = {
       where: {
         id: resourceId,
         app: {
-          organization: {
-            id: organization.id
+          deletedAt: null,
+          workspace: {
+            id: workspace.id
           }
         }
       }
     };
 
-    if (resourceType === AuthorizableResourceParameter.OrganizationId) {
-      return resourceId === organization.id;
+    if (resourceType === AuthorizableResourceParameter.WorkspaceId) {
+      return resourceId === workspace.id;
     }
     if (resourceType === AuthorizableResourceParameter.AppId) {
       const matching = await this.prisma.app.count({
         where: {
+          deletedAt: null,
           id: resourceId,
-          organization: {
-            id: organization.id
+          workspace: {
+            id: workspace.id
           }
         }
       });
@@ -59,7 +61,8 @@ export class PermissionsService {
                 some: {
                   build: {
                     app: {
-                      organizationId: organization.id
+                      deletedAt: null,
+                      workspaceId: workspace.id
                     }
                   }
                 }
@@ -70,7 +73,8 @@ export class PermissionsService {
               builds: {
                 some: {
                   app: {
-                    organizationId: organization.id
+                    deletedAt: null,
+                    workspaceId: workspace.id
                   }
                 }
               }
@@ -86,7 +90,8 @@ export class PermissionsService {
           id: resourceId,
           environment: {
             app: {
-              organizationId: organization.id
+              deletedAt: null,
+              workspaceId: workspace.id
             }
           }
         }
@@ -100,7 +105,8 @@ export class PermissionsService {
           entityVersion: {
             entity: {
               app: {
-                organizationId: organization.id
+                deletedAt: null,
+                workspaceId: workspace.id
               }
             }
           }
@@ -118,7 +124,8 @@ export class PermissionsService {
             entityVersion: {
               entity: {
                 app: {
-                  organizationId: organization.id
+                  deletedAt: null,
+                  workspaceId: workspace.id
                 }
               }
             }

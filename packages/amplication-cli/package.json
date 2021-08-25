@@ -1,7 +1,7 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.5.3",
+  "version": "0.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/amplication/amplication.git"
@@ -44,8 +44,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack-manual": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "prepare": "npm run build",
-    "version": "oclif-dev readme && git add README.md"
+    "prepare": "npm run build"
   },
   "types": "lib/index.d.ts",
   "dependencies": {
@@ -56,7 +55,7 @@
     "@types/pluralize": "^0.0.29",
     "@types/url-join": "^4.0.0",
     "cli-ux": "^5.5.1",
-    "cross-fetch": "3.0.6",
+    "cross-fetch": "3.1.4",
     "graphql": "^15.5.0",
     "pascal-case": "^3.1.2",
     "pluralize": "^8.0.0",
@@ -64,17 +63,17 @@
     "url-join": "^4.0.1"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^1.2.8",
-    "@types/node": "^10.17.51",
-    "@typescript-eslint/eslint-plugin": "2.21.0",
-    "@typescript-eslint/parser": "2.21.0",
-    "eslint": "^5.16.0",
-    "eslint-config-oclif": "^3.1.0",
-    "eslint-config-oclif-typescript": "^0.1.0",
-    "eslint-import-resolver-lerna": "^1.1.0",
-    "eslint-plugin-import": "^2.22.0",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "@oclif/dev-cli": "1.26.0",
+    "@oclif/test": "1.2.8",
+    "@types/node": "10.17.60",
+    "@typescript-eslint/eslint-plugin": "2.34.0",
+    "@typescript-eslint/parser": "2.34.0",
+    "eslint": "5.16.0",
+    "eslint-config-oclif": "3.1.0",
+    "eslint-config-oclif-typescript": "0.2.0",
+    "eslint-import-resolver-lerna": "2.0.0",
+    "eslint-plugin-import": "2.23.4",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.10"
   }
 }

@@ -7,15 +7,12 @@ import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
 import { updatePackageJSONs } from "../update-package-jsons";
 import { DTOs } from "../server/resource/create-dtos";
-import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
-import { createEntitySelectComponents } from "./entity/create-entity-select-components";
 import { createEntityTitleComponents } from "./entity/create-entity-title-components";
 import {
   createEntityComponentsModules,
-  createEntitySelectComponentsModules,
   createEntityTitleComponentsModules,
 } from "./entity/create-entity-components-modules";
 import { createPublicFiles } from "./public-files/create-public-files";
@@ -24,6 +21,7 @@ import { BASE_DIRECTORY } from "./constants";
 import { createEntityToDirectory } from "./create-entity-to-directory";
 import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
+import { createDotEnvModule } from "./create-dotenv";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -45,6 +43,11 @@ export async function createAdminModules(
     name: `${paramCase(appInfo.name)}-admin`,
     version: appInfo.version,
   });
+
+  /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
+   * currently the files were manually copied to /admin/static/src/util
+   */
+
   const entityToPath = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
@@ -57,26 +60,16 @@ export async function createAdminModules(
       `${API_PATHNAME}/${paramCase(plural(entity.name))}`,
     ])
   );
+  const entityNameToEntity = Object.fromEntries(
+    entities.map((entity) => [entity.name, entity])
+  );
+
   const publicFilesModules = await createPublicFiles(appInfo);
-  const navigationModule = await createNavigationModule(entities, entityToPath);
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(dtos);
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles);
-
-  // Create select components first so they are available when creating entity modules
-  const entityToSelectComponent = await createEntitySelectComponents(
-    entities,
-    dtos,
-    entityToDirectory,
-    entityToResource,
-    dtoNameToPath
-  );
-
-  const entitySelectComponentsModules = await createEntitySelectComponentsModules(
-    entityToSelectComponent
-  );
 
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
@@ -95,11 +88,8 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
-    entityToPath,
-    entityToResource,
-    dtoNameToPath,
-    entityToSelectComponent,
-    entityToTitleComponent
+    entityToTitleComponent,
+    entityNameToEntity
   );
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
@@ -111,18 +101,23 @@ export async function createAdminModules(
   );
   const createdModules = [
     appModule,
-    navigationModule,
     enumRolesModule,
     rolesModule,
     ...dtoModules,
-    ...entitySelectComponentsModules,
     ...entityTitleComponentsModules,
     ...entityComponentsModules,
   ];
+  const dotEnvModule = await createDotEnvModule(appInfo);
+
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),
   }));
-  return [...staticModules, ...publicFilesModules, ...formattedModules];
+  return [
+    ...staticModules,
+    ...publicFilesModules,
+    ...formattedModules,
+    dotEnvModule,
+  ];
 }

@@ -19,6 +19,9 @@ import { COLOR_TO_NAME } from "./constants";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { ApiTokenList } from "../Settings/ApiTokenList";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
+import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
+import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -59,7 +62,17 @@ function ApplicationHome({ match }: Props) {
           </div>
           <div>
             <InnerTabLink to={`/${applicationId}/update`} icon="settings">
-              General Settings
+              App Settings
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/db/update`} icon="settings">
+              DB Settings
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/auth/update`} icon="settings">
+              Auth Settings
             </InnerTabLink>
           </div>
           <div>
@@ -76,11 +89,17 @@ function ApplicationHome({ match }: Props) {
       }
     >
       <Switch>
-        <Route path="/:application/api-tokens" component={ApiTokenList} />
-        <Route path="/:application/github" component={SyncWithGithubPage} />
+        <RouteWithAnalytics
+          path="/:application/api-tokens"
+          component={ApiTokenList}
+        />
+        <RouteWithAnalytics
+          path="/:application/github"
+          component={SyncWithGithubPage}
+        />
         <Route
           path="/:application/"
-          component={() => (
+          render={() => (
             <>
               <div
                 className={classNames(
@@ -95,7 +114,7 @@ function ApplicationHome({ match }: Props) {
                 />
               </div>
               <Switch>
-                <Route
+                <RouteWithAnalytics
                   exact
                   path="/:application/"
                   component={() => (
@@ -107,9 +126,17 @@ function ApplicationHome({ match }: Props) {
                     </div>
                   )}
                 />
-                <Route
+                <RouteWithAnalytics
                   path="/:application/update"
                   component={ApplicationForm}
+                />
+                <RouteWithAnalytics
+                  path="/:application/db/update"
+                  component={ApplicationDatabaseSettingsForms}
+                />
+                <RouteWithAnalytics
+                  path="/:application/auth/update"
+                  component={ApplicationAuthSettingForm}
                 />
               </Switch>
             </>

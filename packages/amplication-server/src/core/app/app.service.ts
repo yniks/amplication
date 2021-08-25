@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'nestjs-prisma';
 import * as semver from 'semver';
+import pluralize from 'pluralize';
+import { pascalCase } from 'pascal-case';
 import { isEmpty } from 'lodash';
 import { validateHTMLColorHex } from 'validate-color';
 import { App, User, Commit } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
+import { BlockService } from '../block/block.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
 import {
   SAMPLE_APP_DATA,
@@ -25,8 +28,10 @@ import {
   FindAvailableGithubReposArgs,
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
-  AppValidationErrorTypes
+  AppValidationErrorTypes,
+  AppCreateWithEntitiesInput
 } from './dto';
+
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { AppGenerationConfig } from '@amplication/data-service-generator';
@@ -35,6 +40,10 @@ import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
 import { GithubService } from '../github/github.service';
 import { GithubRepo } from '../github/dto/githubRepo';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { QueryMode } from 'src/enums/QueryMode';
+import { prepareDeletedItemName } from '../../util/softDelete';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -49,6 +58,8 @@ export const DEFAULT_APP_DATA = {
   color: DEFAULT_APP_COLOR
 };
 
+export const INVALID_APP_ID = 'Invalid appId';
+
 const APP_CONFIG_FILE_PATH = 'ampconfig.json';
 
 @Injectable()
@@ -56,13 +67,14 @@ export class AppService {
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
+    private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
     private readonly githubService: GithubService
   ) {}
 
   /**
-   * Create app in the user's organization, with the built-in "user" role
+   * Create app in the user's workspace, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
     const { color } = args.data;
@@ -74,9 +86,9 @@ export class AppService {
       data: {
         ...DEFAULT_APP_DATA,
         ...args.data,
-        organization: {
+        workspace: {
           connect: {
-            id: user.organization?.id
+            id: user.workspace?.id
           }
         },
         roles: {
@@ -89,24 +101,26 @@ export class AppService {
 
     await this.environmentService.createDefaultEnvironment(app.id);
 
-    await this.commit(
-      {
-        data: {
-          app: {
-            connect: {
-              id: app.id
-            }
-          },
-          message: INITIAL_COMMIT_MESSAGE,
-          user: {
-            connect: {
-              id: user.id
+    try {
+      await this.commit(
+        {
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            message: INITIAL_COMMIT_MESSAGE,
+            user: {
+              connect: {
+                id: user.id
+              }
             }
           }
-        }
-      },
-      true
-    );
+        },
+        true
+      );
+    } catch {} //ignore - return the new app and the message will be available on the build log
 
     return app;
   }
@@ -160,19 +174,205 @@ export class AppService {
     return app;
   }
 
+  /**
+   * Create an app with entities and field in one transaction, based only on entities and fields names
+   * @param user the user to associate the created app with
+   */
+  async createAppWithEntities(
+    data: AppCreateWithEntitiesInput,
+    user: User
+  ): Promise<App> {
+    if (
+      data.entities.find(
+        entity => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+      )
+    ) {
+      throw new ReservedEntityNameError(USER_ENTITY_NAME);
+    }
+
+    const existingApps = await this.prisma.app.findMany({
+      where: {
+        name: {
+          mode: QueryMode.Insensitive,
+          startsWith: data.app.name
+        },
+        workspaceId: user.workspace.id,
+        deletedAt: null
+      },
+      select: {
+        name: true
+      }
+    });
+
+    const appName = data.app.name;
+    let index = 1;
+    while (
+      existingApps.find(app => {
+        return app.name.toLowerCase() === data.app.name.toLowerCase();
+      })
+    ) {
+      data.app.name = `${appName}-${index}`;
+      index += 1;
+    }
+
+    const app = await this.createApp(
+      {
+        data: data.app
+      },
+      user
+    );
+
+    const newEntities: {
+      [index: number]: { entityId: string; name: string };
+    } = {};
+
+    for (const { entity, index } of data.entities.map((entity, index) => ({
+      index,
+      entity
+    }))) {
+      const displayName = entity.name.trim();
+
+      const pluralDisplayName = pluralize(displayName);
+      const singularDisplayName = pluralize.singular(displayName);
+      const name = pascalCase(singularDisplayName);
+
+      const newEntity = await this.entityService.createOneEntity(
+        {
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            displayName: displayName,
+            name: name,
+            pluralDisplayName: pluralDisplayName
+          }
+        },
+        user
+      );
+
+      newEntities[index] = {
+        entityId: newEntity.id,
+        name: newEntity.name
+      };
+
+      for (const entityField of entity.fields) {
+        await this.entityService.createFieldByDisplayName(
+          {
+            data: {
+              entity: {
+                connect: {
+                  id: newEntity.id
+                }
+              },
+              displayName: entityField.name,
+              dataType: entityField.dataType
+            }
+          },
+          user
+        );
+      }
+    }
+
+    //after all entities were created, create the relation fields
+    for (const { entity, index } of data.entities.map((entity, index) => ({
+      index,
+      entity
+    }))) {
+      if (entity.relationsToEntityIndex) {
+        for (const relationToIndex of entity.relationsToEntityIndex) {
+          await this.entityService.createFieldByDisplayName(
+            {
+              data: {
+                entity: {
+                  connect: {
+                    id: newEntities[index].entityId
+                  }
+                },
+                displayName: newEntities[relationToIndex].name,
+                dataType: EnumDataType.Lookup
+              }
+            },
+            user
+          );
+        }
+      }
+    }
+    // do not commit if there are no entities
+    if (!isEmpty(data.entities)) {
+      try {
+        await this.commit({
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            message: data.commitMessage,
+            user: {
+              connect: {
+                id: user.id
+              }
+            }
+          }
+        });
+      } catch {} //ignore - return the new app and the message will be available on the build log
+    }
+
+    return app;
+  }
+
   async app(args: FindOneArgs): Promise<App | null> {
-    return this.prisma.app.findUnique(args);
+    return this.prisma.app.findFirst({
+      where: {
+        id: args.where.id,
+        deletedAt: null
+      }
+    });
   }
 
   async apps(args: FindManyAppArgs): Promise<App[]> {
-    return this.prisma.app.findMany(args);
+    return this.prisma.app.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null
+      }
+    });
   }
 
   async deleteApp(args: FindOneArgs): Promise<App | null> {
-    return this.prisma.app.delete(args);
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        name: prepareDeletedItemName(app.name, app.id),
+        deletedAt: new Date()
+      }
+    });
   }
 
   async updateApp(args: UpdateOneAppArgs): Promise<App | null> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     return this.prisma.app.update(args);
   }
 
@@ -188,7 +388,8 @@ export class AppService {
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organization: {
+        deletedAt: null,
+        workspace: {
           users: {
             some: {
               id: user.id
@@ -202,8 +403,12 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    return this.entityService.getChangedEntities(appId, user.id);
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, user.id),
+      this.blockService.getChangedBlocks(appId, user.id)
+    ]);
+
+    return [...changedEntities, ...changedBlocks];
   }
 
   async commit(
@@ -216,7 +421,8 @@ export class AppService {
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organization: {
+        deletedAt: null,
+        workspace: {
           users: {
             some: {
               id: userId
@@ -230,19 +436,12 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    const changedEntities = await this.entityService.getChangedEntities(
-      appId,
-      userId
-    );
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, userId),
+      this.blockService.getChangedBlocks(appId, userId)
+    ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
-
-    if (isEmpty(changedEntities)) {
-      throw new Error(
-        `There are no pending changes for user ${userId} in app ${appId}`
-      );
-    }
 
     const commit = await this.prisma.commit.create(args);
 
@@ -266,6 +465,32 @@ export class AppService {
         const releasePromise = this.entityService.releaseLock(
           change.resourceId
         );
+
+        return [
+          versionPromise.then(() => null),
+          releasePromise.then(() => null)
+        ];
+      })
+    );
+
+    await Promise.all(
+      changedBlocks.flatMap(change => {
+        const versionPromise = this.blockService.createVersion({
+          data: {
+            commit: {
+              connect: {
+                id: commit.id
+              }
+            },
+            block: {
+              connect: {
+                id: change.resourceId
+              }
+            }
+          }
+        });
+
+        const releasePromise = this.blockService.releaseLock(change.resourceId);
 
         return [
           versionPromise.then(() => null),
@@ -313,7 +538,8 @@ export class AppService {
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organization: {
+        deletedAt: null,
+        workspace: {
           users: {
             some: {
               id: userId
@@ -327,26 +553,29 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    const changedEntities = await this.entityService.getChangedEntities(
-      appId,
-      userId
-    );
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, userId),
+      this.blockService.getChangedBlocks(appId, userId)
+    ]);
 
-    if (isEmpty(changedEntities)) {
+    if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
       throw new Error(
         `There are no pending changes for user ${userId} in app ${appId}`
       );
     }
 
-    await Promise.all(
-      changedEntities.map(change => {
-        return this.entityService.discardPendingChanges(
-          change.resourceId,
-          userId
-        );
-      })
-    );
+    const entityPromises = changedEntities.map(change => {
+      return this.entityService.discardPendingChanges(
+        change.resourceId,
+        userId
+      );
+    });
+    const blockPromises = changedBlocks.map(change => {
+      return this.blockService.discardPendingChanges(change.resourceId, userId);
+    });
+
+    await Promise.all(blockPromises);
+    await Promise.all(entityPromises);
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
@@ -354,13 +583,23 @@ export class AppService {
     return true;
   }
 
-  async startAuthorizeAppWithGithub(appId: string) {
+  async startAuthorizeAppWithGithub(appId: string): Promise<string> {
     return this.githubService.getOAuthAppAuthorizationUrl(appId);
   }
 
   async completeAuthorizeAppWithGithub(
     args: CompleteAuthorizeAppWithGithubArgs
   ): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     const token = await this.githubService.createOAuthAppAuthorizationToken(
       args.data.state,
       args.data.code
@@ -382,6 +621,10 @@ export class AppService {
         id: args.where.id
       }
     });
+
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
 
     if (isEmpty(app.githubToken)) {
       throw new Error(`This app is not authorized with any GitHub repo.`);
@@ -409,6 +652,10 @@ export class AppService {
       }
     });
 
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     if (isEmpty(app.githubToken)) {
       throw new Error(
         `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
@@ -435,6 +682,10 @@ export class AppService {
         id: args.where.id
       }
     });
+
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
 
     if (!app.githubSyncEnabled) return { isValid, messages };
     if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
@@ -493,6 +744,10 @@ export class AppService {
       }
     });
 
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     if (isEmpty(app.githubToken)) {
       throw new Error(`This app is not authorized with any GitHub repo`);
     }
@@ -533,6 +788,10 @@ export class AppService {
       }
     });
 
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     if (app.githubSyncEnabled) {
       throw new Error(
         `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
@@ -562,6 +821,10 @@ export class AppService {
       }
     });
 
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     if (!app.githubSyncEnabled) {
       throw new Error(`Sync is not enabled for this app`);
     }
@@ -579,6 +842,16 @@ export class AppService {
   }
 
   async reportSyncMessage(appId: string, message: string): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: appId
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
     //directly update with prisma since we don't want to expose these fields for regular updates
     return this.prisma.app.update({
       where: {

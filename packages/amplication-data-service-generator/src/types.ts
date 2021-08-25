@@ -20,12 +20,30 @@ export type WorkerParam = {
   appInfo: AppInfo;
 };
 
+export type AppSettings = Omit<
+  models.AppSettings,
+  | "__typename"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "parentBlock"
+  | "displayName"
+  | "description"
+  | "blockType"
+  | "versionNumber"
+  | "inputParameters"
+  | "outputParameters"
+  | "lockedByUserId"
+  | "lockedAt"
+>;
+
 export type AppInfo = {
   name: string;
   description: string;
   version: string;
   id: string;
   url: string;
+  settings: AppSettings;
 };
 
 export type Role = Omit<
@@ -55,10 +73,10 @@ export type EntityPermissionField = Omit<
   | "fieldPermanentId"
   | "field"
   | "entityVersionId"
-  | "permissionFieldRoles"
+  | "permissionRoles"
 > & {
   field: EntityField;
-  permissionFieldRoles: EntityPermissionRole[] | null;
+  permissionRoles: EntityPermissionRole[] | null;
 };
 
 export type EntityPermission = Omit<

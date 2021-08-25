@@ -12,10 +12,6 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
-type TData = {
-  entity: models.Entity;
-};
-
 type Props = {
   entityId: string;
   actionDisplayName: string;
@@ -43,9 +39,9 @@ export const EntityPermissionField = ({
 
   const selectedRoleIds = useMemo((): Set<string> => {
     return new Set(
-      permissionField.permissionFieldRoles?.map((item) => item.appRole.id)
+      permissionField.permissionRoles?.map((item) => item.appRole.id)
     );
-  }, [permissionField.permissionFieldRoles]);
+  }, [permissionField.permissionRoles]);
 
   /**@todo: handle  errors */
   const [updateRole] = useMutation(UPDATE_ROLES, {
@@ -181,7 +177,7 @@ const UPDATE_ROLES = gql`
         name
         displayName
       }
-      permissionFieldRoles {
+      permissionRoles {
         id
         appRole {
           id

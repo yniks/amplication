@@ -8,10 +8,6 @@ import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 
-type DType = {
-  deleteEntityField: { id: string };
-};
-
 type Props = {
   applicationId: string;
   entity: models.Entity;
@@ -105,6 +101,12 @@ export const EntityFieldListItem = ({
           <span className={`${CLASS_NAME}__property`}>
             <Icon icon="check" />
             Required
+          </span>
+        )}
+        {entityField.unique && (
+          <span className={`${CLASS_NAME}__property`}>
+            <Icon icon="check" />
+            Unique
           </span>
         )}
         {entityField.searchable && (
