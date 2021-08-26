@@ -27,11 +27,7 @@ export const SchemaField = ({
 }: Props) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
-  console.log(propertySchema);
-
   if (propertySchema.enum) {
-    console.log({ propertySchema });
-
     if (propertySchema.enum.every((item) => typeof item === "string")) {
       return (
         <EnumSelectField
@@ -66,22 +62,24 @@ export const SchemaField = ({
       return <ToggleField name={fieldName} label={label} disabled={disabled} />;
     }
     case "array": {
-      if (!propertySchema.items) {
-        throw new Error("Array schema must define items");
-      }
-
-      switch (propertySchema.items.type) {
-        case "object": {
-          return (
-            <OptionSet label={label} name={fieldName} isDisabled={disabled} />
-          );
+      if (
+        typeof propertySchema.items === "object" &&
+        !(propertySchema.items instanceof Array)
+      ) {
+        switch (propertySchema.items.type) {
+          case "object": {
+            return (
+              <OptionSet label={label} name={fieldName} isDisabled={disabled} />
+            );
+          }
+          default: {
+            throw new Error(
+              `Unexpected propertySchema.items.type: ${propertySchema.type}`
+            );
+          }
         }
-        default: {
-          throw new Error(
-            `Unexpected propertySchema.items.type: ${propertySchema.type}`
-          );
-        }
       }
+      throw new Error("Array schema must define items");
     }
     default: {
       switch (propertySchema?.$ref) {

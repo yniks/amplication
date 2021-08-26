@@ -15,10 +15,6 @@ export const SchemaFields = ({
   applicationId,
   entityDisplayName,
 }: Props) => {
-  if (schema === null) {
-    return null;
-  }
-
   if (schema.type !== "object") {
     throw new Error(`Unexpected type ${schema.type}`);
   }
@@ -30,15 +26,14 @@ export const SchemaFields = ({
             throw new Error(`Missing property: ${name}`);
           }
           return (
-            <div key={name}>
-              <SchemaField
-                propertyName={name}
-                propertySchema={property as Schema}
-                disabled={disabled}
-                applicationId={applicationId}
-                entityDisplayName={entityDisplayName}
-              />
-            </div>
+            <SchemaField
+              key={name}
+              propertyName={name}
+              propertySchema={property as Schema}
+              disabled={disabled}
+              applicationId={applicationId}
+              entityDisplayName={entityDisplayName}
+            />
           );
         })}
       </div>

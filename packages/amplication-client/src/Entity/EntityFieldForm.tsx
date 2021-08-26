@@ -94,6 +94,8 @@ const EntityFieldForm = ({
     <Formik
       initialValues={initialValues}
       validate={(values: Values) => {
+        console.log(values);
+
         const errors: FormikErrors<Values> = validate<Values>(
           values,
           FORM_SCHEMA
@@ -119,8 +121,6 @@ const EntityFieldForm = ({
     >
       {(formik) => {
         const schema = getSchemaForDataType(formik.values.dataType);
-        console.log(schema);
-
         return (
           <Form childrenAsBlocks>
             {!disabled && <FormikAutoSave debounceMS={1000} />}
