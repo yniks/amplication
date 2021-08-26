@@ -7,7 +7,6 @@ type Props = {
   disabled?: boolean;
   applicationId: string;
   entityDisplayName: string;
-  isSystemData?: boolean;
 };
 
 export const SchemaFields = ({
@@ -15,7 +14,6 @@ export const SchemaFields = ({
   disabled,
   applicationId,
   entityDisplayName,
-  isSystemData,
 }: Props) => {
   if (schema === null) {
     return null;
@@ -24,17 +22,18 @@ export const SchemaFields = ({
   if (schema.type !== "object") {
     throw new Error(`Unexpected type ${schema.type}`);
   }
-  return (
-    <div>
-      {schema.properties &&
-        Object.entries(schema.properties).map(([name, property]) => {
-          if (!property) throw new Error(`Missing property: ${name}`);
+  if (schema?.properties) {
+    return (
+      <div>
+        {Object.entries(schema.properties).map(([name, property]) => {
+          if (!property) {
+            throw new Error(`Missing property: ${name}`);
+          }
           return (
             <div key={name}>
               <SchemaField
                 propertyName={name}
                 propertySchema={property as Schema}
-                isSystemData={isSystemData}
                 disabled={disabled}
                 applicationId={applicationId}
                 entityDisplayName={entityDisplayName}
@@ -42,6 +41,8 @@ export const SchemaFields = ({
             </div>
           );
         })}
-    </div>
-  );
+      </div>
+    );
+  }
+  return null;
 };

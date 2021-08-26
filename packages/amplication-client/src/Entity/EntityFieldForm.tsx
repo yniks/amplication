@@ -13,7 +13,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import { SYSTEM_DATA_TYPES } from "./constants";
 import DataTypeSelectField from "./DataTypeSelectField";
-import { SchemaFields } from "./SchemaFields";
+import { SchemaFields } from "./SchemaFields/SchemaFields";
 
 export type Values = {
   id: string; //the id field is required in the form context to be used in "DataTypeSelectField"
@@ -83,6 +83,13 @@ const EntityFieldForm = ({
       ...sanitizedDefaultValues,
     };
   }, [defaultValues]);
+
+  // function onKeyDown(keyEvent: any) {
+  //   if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+  //     keyEvent.preventDefault();
+  //   }
+  // }
+
   return (
     <Formik
       initialValues={initialValues}
@@ -169,7 +176,6 @@ const EntityFieldForm = ({
 
             <SchemaFields
               schema={schema}
-              isSystemData={isSystemData}
               disabled={disabled}
               applicationId={applicationId}
               entityDisplayName={entityDisplayName}

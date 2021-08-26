@@ -1,12 +1,12 @@
 import React from "react";
 import { capitalCase } from "capital-case";
 import { ToggleField, TextField } from "@amplication/design-system";
-import EntitySelectField from "../Components/EntitySelectField";
-import EnumSelectField from "../Components/EnumSelectField";
-import RelatedEntityFieldField from "./RelatedEntityFieldField";
-import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
+import EntitySelectField from "../../Components/EntitySelectField";
+import EnumSelectField from "../../Components/EnumSelectField";
+import RelatedEntityFieldField from "../RelatedEntityFieldField";
+import RelationAllowMultipleField from "../../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/data";
-import OptionSet from "../Entity/OptionSet";
+import OptionSet from "../OptionSet";
 
 type Props = {
   propertyName: string;
