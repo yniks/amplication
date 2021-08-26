@@ -8,40 +8,36 @@ import RelationAllowMultipleField from "../Components/RelationAllowMultipleField
 import { Schema } from "@amplication/data";
 import OptionSet from "../Entity/OptionSet";
 
-export const SchemaField = ({
-  propertyName,
-  propertySchema,
-  isDisabled,
-  applicationId,
-  entityDisplayName,
-  isSystemData,
-}: {
+type Props = {
   propertyName: string;
   propertySchema: Schema;
-  isDisabled?: boolean;
+  disabled?: boolean;
   applicationId: string;
   entityDisplayName: string;
   isSystemData?: boolean;
-}) => {
+};
+
+export const SchemaField = ({
+  propertyName,
+  propertySchema,
+  disabled,
+  applicationId,
+  entityDisplayName,
+  isSystemData,
+}: Props) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
-  console.log(
-    { propertyName },
-    { propertySchema },
-    { isDisabled },
-    { applicationId },
-    { entityDisplayName },
-    { isSystemData },
-    { propertySchema }
-  );
+  console.log(propertySchema);
 
   if (propertySchema.enum) {
+    console.log({ propertySchema });
+
     if (propertySchema.enum.every((item) => typeof item === "string")) {
       return (
         <EnumSelectField
           label={label}
           name={fieldName}
-          disabled={isDisabled}
+          disabled={disabled}
           options={propertySchema.enum as string[]}
         />
       );
@@ -51,10 +47,9 @@ export const SchemaField = ({
       );
     }
   }
-
   switch (propertySchema.type) {
     case "string": {
-      return <TextField name={fieldName} label={label} disabled={isDisabled} />;
+      return <TextField name={fieldName} label={label} disabled={disabled} />;
     }
     case "integer":
     case "number": {
@@ -63,14 +58,12 @@ export const SchemaField = ({
           type="number"
           name={fieldName}
           label={label}
-          disabled={isDisabled}
+          disabled={disabled}
         />
       );
     }
     case "boolean": {
-      return (
-        <ToggleField name={fieldName} label={label} disabled={isDisabled} />
-      );
+      return <ToggleField name={fieldName} label={label} disabled={disabled} />;
     }
     case "array": {
       if (!propertySchema.items) {
@@ -80,7 +73,7 @@ export const SchemaField = ({
       switch (propertySchema.items.type) {
         case "object": {
           return (
-            <OptionSet label={label} name={fieldName} isDisabled={isDisabled} />
+            <OptionSet label={label} name={fieldName} isDisabled={disabled} />
           );
         }
         default: {
@@ -97,7 +90,7 @@ export const SchemaField = ({
             <EntitySelectField
               label={label}
               name={fieldName}
-              disabled={isDisabled}
+              disabled={disabled}
               applicationId={applicationId}
             />
           );
@@ -111,7 +104,7 @@ export const SchemaField = ({
           return (
             <RelationAllowMultipleField
               fieldName={fieldName}
-              isDisabled={isDisabled}
+              isDisabled={disabled}
               entityDisplayName={entityDisplayName}
             />
           );

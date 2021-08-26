@@ -4,7 +4,7 @@ import { Schema } from "@amplication/data";
 
 type Props = {
   schema: Schema;
-  isDisabled?: boolean;
+  disabled?: boolean;
   applicationId: string;
   entityDisplayName: string;
   isSystemData?: boolean;
@@ -12,7 +12,7 @@ type Props = {
 
 export const SchemaFields = ({
   schema,
-  isDisabled,
+  disabled,
   applicationId,
   entityDisplayName,
   isSystemData,
@@ -26,24 +26,22 @@ export const SchemaFields = ({
   }
   return (
     <div>
-      {Object.entries(schema.properties).map(([name, property]) => {
-        if (!property) {
-          throw new Error(`Missing property: ${name}`);
-        }
-
-        return (
-          <div key={name}>
-            <SchemaField
-              propertyName={name}
-              propertySchema={property as Schema}
-              isSystemData={isSystemData}
-              isDisabled={isDisabled}
-              applicationId={applicationId}
-              entityDisplayName={entityDisplayName}
-            />
-          </div>
-        );
-      })}
+      {schema.properties &&
+        Object.entries(schema.properties).map(([name, property]) => {
+          if (!property) throw new Error(`Missing property: ${name}`);
+          return (
+            <div key={name}>
+              <SchemaField
+                propertyName={name}
+                propertySchema={property as Schema}
+                isSystemData={isSystemData}
+                disabled={disabled}
+                applicationId={applicationId}
+                entityDisplayName={entityDisplayName}
+              />
+            </div>
+          );
+        })}
     </div>
   );
 };

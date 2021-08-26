@@ -185,7 +185,7 @@ const EntityField = () => {
             )}
           </div>
           <EntityFieldForm
-            isDisabled={false}
+            disabled={false}
             isSystemData={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }

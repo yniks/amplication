@@ -29,7 +29,7 @@ export type Values = {
 
 type Props = {
   onSubmit: (values: Values) => void;
-  isDisabled?: boolean;
+  disabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
   applicationId: string;
   entityDisplayName: string;
@@ -67,7 +67,7 @@ export const INITIAL_VALUES: Values = {
 const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
-  isDisabled,
+  disabled,
   applicationId,
   entityDisplayName,
   isSystemData,
@@ -77,13 +77,12 @@ const EntityFieldForm = ({
       defaultValues,
       NON_INPUT_GRAPHQL_PROPERTIES
     );
+
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
     };
   }, [defaultValues]);
-  console.log(initialValues);
-
   return (
     <Formik
       initialValues={initialValues}
@@ -113,58 +112,65 @@ const EntityFieldForm = ({
     >
       {(formik) => {
         const schema = getSchemaForDataType(formik.values.dataType);
+        console.log(schema);
 
         return (
           <Form childrenAsBlocks>
-            {!isDisabled && <FormikAutoSave debounceMS={1000} />}
+            {!disabled && <FormikAutoSave debounceMS={1000} />}
 
             <DisplayNameField
               name="displayName"
               label="Display Name"
-              disabled={isDisabled ? isDisabled : isSystemData}
+              disabled={disabled || isSystemData}
               required
             />
             <NameField
               name="name"
-              disabled={isDisabled ? isDisabled : isSystemData}
+              disabled={disabled || isSystemData}
               required
             />
             <OptionalDescriptionField
               name="description"
               label="Description"
-              disabled={isDisabled ? isDisabled : isSystemData}
+              disabled={disabled || isSystemData}
             />
-            <div>
-              <ToggleField
-                name="unique"
-                label="Unique Field"
-                disabled={isDisabled}
-              />
-            </div>
-            <div>
-              <ToggleField
-                name="required"
-                label="Required Field"
-                disabled={isDisabled ? isDisabled : isSystemData}
-              />
-            </div>
-            <div>
-              <ToggleField
-                name="searchable"
-                label="Searchable"
-                disabled={isDisabled ? isDisabled : isSystemData}
-              />
-            </div>
-            {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
-              <DataTypeSelectField
-                label="Data Type"
-                disabled={isDisabled ? isDisabled : isSystemData}
-              />
+            {/* check if the field isn't id */}
+            {schema.title !== "id" && (
+              <>
+                <div>
+                  <ToggleField
+                    name="unique"
+                    label="Unique Field"
+                    disabled={disabled || isSystemData}
+                  />
+                </div>
+                <div>
+                  <ToggleField
+                    name="required"
+                    label="Required Field"
+                    disabled={disabled || isSystemData}
+                  />
+                </div>
+                <div>
+                  <ToggleField
+                    name="searchable"
+                    label="Searchable"
+                    disabled={disabled || isSystemData}
+                  />
+                </div>
+                {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
+                  <DataTypeSelectField
+                    label="Data Type"
+                    disabled={disabled || isSystemData}
+                  />
+                )}
+              </>
             )}
+
             <SchemaFields
               schema={schema}
               isSystemData={isSystemData}
-              isDisabled={isDisabled}
+              disabled={disabled}
               applicationId={applicationId}
               entityDisplayName={entityDisplayName}
             />
