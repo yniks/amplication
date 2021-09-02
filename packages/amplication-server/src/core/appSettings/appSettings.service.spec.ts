@@ -43,9 +43,7 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  authProvider: EnumAuthProviderType.Http,
-  appUserName: 'admin',
-  appPassword: 'admin'
+  authProvider: EnumAuthProviderType.Jwt
 };
 
 const createMock = jest.fn(() => {
@@ -94,7 +92,7 @@ describe('AppSettingsService', () => {
         },
         EXAMPLE_USER
       )
-    ).toBe(EXAMPLE_APP_SETTINGS);
+    ).toEqual(EXAMPLE_APP_SETTINGS);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 

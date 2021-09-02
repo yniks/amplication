@@ -84,11 +84,11 @@ const EntityFieldForm = ({
     };
   }, [defaultValues]);
 
-  // function onKeyDown(keyEvent: any) {
-  //   if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
-  //     keyEvent.preventDefault();
-  //   }
-  // }
+  function onKeyDown(keyEvent: any) {
+    if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+      keyEvent.preventDefault();
+    }
+  }
 
   return (
     <Formik
@@ -122,7 +122,7 @@ const EntityFieldForm = ({
       {(formik) => {
         const schema = getSchemaForDataType(formik.values.dataType);
         return (
-          <Form childrenAsBlocks>
+          <Form childrenAsBlocks onKeyDown={onKeyDown}>
             {!disabled && <FormikAutoSave debounceMS={1000} />}
 
             <DisplayNameField
