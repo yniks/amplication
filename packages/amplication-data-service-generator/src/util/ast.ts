@@ -178,6 +178,49 @@ export function getExportedNames(
   }
   return ids;
 }
+export function getModuleClassIdentifier(
+  code: string
+): namedTypes.Identifier[] {
+  const file = parse(code);
+  const exports = getExportsForModule(file.program);
+  const classes = exports.flatMap((exportObject) =>
+    namedTypes.ClassDeclaration.check(exportObject)
+      ? [exportObject?.declaration]
+      : []
+  );
+  const classesWithDecoration = classes.flatMap((classDeclaration) =>
+    isClassDeclarationHaveDecoration(classDeclaration) ? [classDeclaration] : []
+  );
+  const classesWithNestjsModuleDecoration = classesWithDecoration.flatMap(
+    (classDeclaration) =>
+      //@ts-ignore
+      isDecoratorIsNestjsModule(classDeclaration?.decorators)
+        ? [classDeclaration]
+        : []
+  );
+  const classesIdentifier = classesWithNestjsModuleDecoration.flatMap(
+    (classDeclaration) => (classDeclaration.id ? [classDeclaration.id] : [])
+  );
+  //@ts-ignore
+  return classesIdentifier;
+}
+export function isDecoratorIsNestjsModule(
+  nodes: namedTypes.Decorator[]
+): boolean {
+  //@ts-ignore
+  return nodes.some((node) => node.expression?.callee?.name === "Module");
+}
+export function isClassDeclarationHaveDecoration(
+  classDeclaration: namedTypes.ClassDeclaration
+): boolean {
+  return classDeclaration?.decorators.length > 0;
+}
+
+export function getExportsForModule(program: namedTypes.Program) {
+  return program.body.flatMap((node) =>
+    namedTypes.ExportDeclaration.check(node) ? [node] : []
+  );
+}
 
 /**
  * In given AST replaces identifiers with AST nodes according to given mapping
@@ -411,7 +454,6 @@ export function importNames(
     builders.stringLiteral(source)
   );
 }
-
 export function addImports(
   file: namedTypes.File,
   imports: namedTypes.ImportDeclaration[]
