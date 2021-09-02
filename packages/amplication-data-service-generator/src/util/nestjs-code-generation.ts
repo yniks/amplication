@@ -36,3 +36,9 @@ export function addInjectableDependency(
     })
   );
 }
+
+export function filterHaveModuleInName(
+  files: namedTypes.Identifier[]
+): namedTypes.Identifier[] {
+  return files.filter((file) => file.name.includes("Module"));
+}

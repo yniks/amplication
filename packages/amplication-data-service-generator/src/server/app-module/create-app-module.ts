@@ -12,8 +12,10 @@ import {
   removeTSIgnoreComments,
   importDeclaration,
   callExpression,
+  getModuleClassIdentifier,
 } from "../../util/ast";
 import { SRC_DIRECTORY } from "../constants";
+import { filterHaveModuleInName } from "../../util/nestjs-code-generation";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const MODULE_PATH = `${SRC_DIRECTORY}/app.module.ts`;
@@ -36,16 +38,26 @@ export async function createAppModule(
     ...staticModules.filter((module) => module.path.match(MODULE_PATTERN)),
   ];
 
+  const testmodules = nestModules.map((module) => ({
+    module: module,
+    exports: getModuleClassIdentifier(module.code),
+  }));
+  console.log(testmodules);
+
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
-    exports: getExportedNames(module.code),
+    //@ts-ignore
+    exports: filterHaveModuleInName(getExportedNames(module.code)),
   }));
   const moduleImports = nestModulesWithExports.map(({ module, exports }) => {
     /** @todo explicitly check for "@Module" decorated classes */
+
+    //@ts-ignore
+    const includesTheWordModule = filterHaveModuleInName(exports);
     return importNames(
       // eslint-disable-next-line
       // @ts-ignore
-      exports,
+      includesTheWordModule,
       relativeImportPath(MODULE_PATH, module.path)
     );
   });
