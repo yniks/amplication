@@ -1,16 +1,16 @@
-import { plural } from "pluralize";
 import { camelCase } from "camel-case";
-import { paramCase } from "param-case";
 import flatten from "lodash.flatten";
+import { paramCase } from "param-case";
+import { plural } from "pluralize";
 import * as winston from "winston";
-import { Entity, Module, AppInfo } from "../../types";
+import { AppInfo, Entity, Module } from "../../types";
 import { validateEntityName } from "../../util/entity";
-import { DTOs } from "./create-dtos";
-import { createServiceModules } from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
+import { DTOs } from "./create-dtos";
 import { createModules } from "./module/create-module";
-import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
+import { createServiceModules } from "./service/create-service";
+import { createSpecs } from "./test/createSpecs";
 
 export async function createResourcesModules(
   appInfo: AppInfo,
@@ -78,8 +78,7 @@ async function createResourceModules(
     controllerModule.path,
     resolverModule.path
   );
-
-  const testModule = await createControllerSpecModule(
+  const specs = await createSpecs(
     resource,
     entity,
     entityType,
@@ -93,6 +92,6 @@ async function createResourceModules(
     ...controllerModules,
     ...resolverModules,
     ...resourceModules,
-    testModule,
+    ...specs,
   ];
 }
