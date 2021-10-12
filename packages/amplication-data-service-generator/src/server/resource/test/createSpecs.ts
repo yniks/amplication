@@ -1,5 +1,6 @@
 import { Entity, Module } from "../../../types";
 import { createControllerSpecModule } from "./create-controller-spec";
+import { createResolverSpec } from "./resolver/createResolverSpec";
 
 export async function createSpecs(
   resource: string,
@@ -17,5 +18,6 @@ export async function createSpecs(
     entityControllerModule,
     entityControllerBaseModule
   );
-  return [controllerSpec];
+  const resolverSpec = await createResolverSpec();
+  return [controllerSpec, resolverSpec];
 }

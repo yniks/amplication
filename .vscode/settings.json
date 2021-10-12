@@ -50,5 +50,6 @@
   },
   "[terraform]": {
     "editor.defaultFormatter": null
-  }
+  },
+  "jest.jestCommandLine": "jest"
 }
