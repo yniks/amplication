@@ -19,6 +19,7 @@ import { createServerModules } from "./server/create-server";
 import { createRootModules } from "./create-root-modules";
 import { readStaticModules } from "./read-static-modules";
 import { types } from "@amplication/data";
+import { createSdkModules } from "./sdk/createSdk";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 const BASE_DIRECTORY = "";
@@ -46,6 +47,7 @@ export async function createDataServiceImpl(
   const modules = (
     await Promise.all([
       readStaticModules(STATIC_DIRECTORY, BASE_DIRECTORY),
+      createSdkModules(appInfo, entities),
       createServerModules(
         normalizedEntities,
         roles,
