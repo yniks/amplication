@@ -1,6 +1,8 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { BasicStrategy as Strategy } from "passport-http";
+// @ts-ignore
+// eslint-disable-next-line
 import { AuthService } from "../../auth.service";
 import { IAuthStrategy } from "../../IAuthStrategy";
 import { UserInfo } from "../../UserInfo";

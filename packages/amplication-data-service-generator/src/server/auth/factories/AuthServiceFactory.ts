@@ -6,39 +6,39 @@ export class AuthServiceFactory {
   build(): namedTypes.ClassDeclaration {
     return b.classDeclaration(
       b.identifier("AuthService"),
-      b.classBody([
-        b.methodDefinition(
-          "constructor",
-          b.identifier("constructor"),
-          b.functionExpression(
-            null,
-            [
-              {
-                ...b.tsParameterProperty({
-                  name: "userService",
-                  type: "TSTypeParameter",
-                  typeAnnotation: b.tsTypeAnnotation({
-                    type: "TSTypeAnnotation",
-                    typeAnnotation: b.tsTypeReference(
-                      b.identifier("UserService"),
-                      undefined
-                    ),
-                  }),
-                }),
-                accessibility: "private",
-                readonly: true,
-              },
-            ],
-            b.blockStatement([])
-          )
-        ),
-      ]),
-
+      b.classBody([this.buildConstructor(), this.buildLoginMethod()]),
       null
     );
   }
+  private buildConstructor() {
+    return b.methodDefinition(
+      "constructor",
+      b.identifier("constructor"),
+      b.functionExpression(
+        null,
+        [
+          {
+            ...b.tsParameterProperty({
+              name: "userService",
+              type: "TSTypeParameter",
+              typeAnnotation: b.tsTypeAnnotation({
+                type: "TSTypeAnnotation",
+                typeAnnotation: b.tsTypeReference(
+                  b.identifier("UserService"),
+                  undefined
+                ),
+              }),
+            }),
+            accessibility: "private",
+            readonly: true,
+          },
+        ],
+        b.blockStatement([])
+      )
+    );
+  }
 
-  buildLoginMethod(): namedTypes.MethodDefinition {
+  public buildLoginMethod(): namedTypes.MethodDefinition {
     return b.methodDefinition("method", b.identifier("login"), {
       ...b.functionExpression(
         null,
@@ -47,13 +47,85 @@ export class AuthServiceFactory {
             ...b.identifier("credentials"),
             type: "Identifier",
             name: "credentials",
-            //   typeAnnotation TODO
+            typeAnnotation: b.tsTypeAnnotation(
+              b.tsTypeReference(b.identifier("Credentials"))
+            ),
           },
         ],
         b.blockStatement([
-            b.variableDeclaration("const",)
-            
-            b.returnStatement(b.objectExpression([]))]),
+          b.variableDeclaration("const", [
+            b.variableDeclarator(
+              b.identifier("user"),
+              b.awaitExpression(
+                b.callExpression(
+                  b.memberExpression(
+                    b.thisExpression(),
+                    b.identifier("validateUser")
+                  ),
+                  [
+                    b.memberExpression(
+                      b.identifier("credentials"),
+                      b.identifier("username")
+                    ),
+                    b.memberExpression(
+                      b.identifier("credentials"),
+                      b.identifier("password")
+                    ),
+                  ]
+                )
+              )
+            ),
+          ]),
+          b.ifStatement(
+            b.unaryExpression("!", b.identifier("user")),
+            b.blockStatement([
+              b.throwStatement(
+                b.newExpression(b.identifier("UnauthorizedException"), [
+                  b.literal("The passed credentials are incorrect"),
+                ])
+              ),
+            ])
+          ),
+
+          b.variableDeclaration("const", [
+            b.variableDeclarator(
+              b.identifier("accessToken"),
+              b.awaitExpression(
+                b.callExpression(
+                  b.memberExpression(
+                    b.memberExpression(
+                      b.thisExpression(),
+                      b.identifier("jwtService")
+                    ),
+                    b.identifier("signAsync")
+                  ),
+                  [
+                    b.objectExpression([
+                      b.property(
+                        "init",
+                        b.identifier("username"),
+                        b.memberExpression(
+                          b.identifier("user"),
+                          b.identifier("username")
+                        )
+                      ),
+                    ]),
+                  ]
+                )
+              )
+            ),
+          ]),
+          b.returnStatement(
+            b.objectExpression([
+              b.property(
+                "init",
+                b.identifier("accessToken"),
+                b.identifier("accessToken")
+              ),
+              b.spreadElement(b.identifier("user")),
+            ])
+          ),
+        ]),
         false
       ),
       returnType: b.tsTypeAnnotation(
@@ -64,6 +136,7 @@ export class AuthServiceFactory {
           ])
         )
       ),
+      async: true,
     });
   }
 }
