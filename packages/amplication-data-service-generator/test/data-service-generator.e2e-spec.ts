@@ -487,6 +487,7 @@ describe("Data Service Generator", () => {
   });
 
   //TODO add test if not connect to db send api/health/ready status 503
+  //TODO add test to run tests in the generated app
 });
 
 async function down(
