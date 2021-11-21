@@ -11,6 +11,15 @@ import { OAuthApp } from '@octokit/oauth-app';
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { HandlerFactory } from '../git/utils/HandlerFactory/HandlerFactory';
+import {
+  File,
+  UpdateFunction,
+  UpdateFunctionFile
+} from 'octokit-plugin-create-pull-request/dist-types/types';
+import { LockFileHandler } from '../git/utils/LockFileHandler/LockFileHandler';
+import { AmplicationError } from 'src/errors/AmplicationError';
+import { format } from 'prettier';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -114,35 +123,34 @@ export class GithubService {
       auth: TOKEN
     });
 
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
-    //do not override server/scripts/customSeed.ts
-    const doNotOverride = [
-      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
-      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
-      /^server\/src\/[^\/]+\/.+\.service.ts$/,
-      /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/scripts\/customSeed.ts$/
-    ];
-
-    const authFolder = 'server/src/auth';
-
-    const files = Object.fromEntries(
+    // const authFolder = 'server/src/auth';
+    const handlersFactory = new HandlerFactory();
+    const files: {
+      [path: string]: string | File | UpdateFunction;
+    } = Object.fromEntries(
       modules.map(module => {
         if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
+          !module.path.startsWith('admin-ui') &&
+          !module.path.includes('package-lock')
         ) {
-          return [
-            module.path,
-            ({ exists }) => {
-              // do not create the file if it already exist
-              if (exists) return null;
-
-              return module.code;
+          const updateFunction: UpdateFunction = ({
+            content,
+            exists
+          }: UpdateFunctionFile) => {
+            if (exists) {
+              const existingCode = Buffer.from(content, 'base64').toString();
+              const handler = handlersFactory.getHandler(module.path);
+              if (handler instanceof LockFileHandler) {
+                return null;
+              }
+              const code = handler.handleFile(module, existingCode);
+              return code;
             }
-          ];
+            return module.code;
+          };
+          return [module.path, updateFunction];
+          return [module.path, module.code];
         }
-
         return [module.path, module.code];
       })
     );
@@ -151,41 +159,45 @@ export class GithubService {
 
     // Returns a normal Octokit PR response
     // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
-    const pr = await octokit.createPullRequest({
-      owner: userName,
-      repo: repoName,
-      title: commitMessage,
-      body: commitDescription,
-      base: baseBranchName /* optional: defaults to default branch */,
-      head: commitName,
-      changes: [
-        {
-          /* optional: if `files` is not passed, an empty commit is created instead */
-          files: files,
-          // {
-          //   'path/to/file1.txt': 'Content for file1',
-          //   'path/to/file2.png': {
-          //     content: '_base64_encoded_content_',
-          //     encoding: 'base64'
-          //   },
-          //   // deletes file if it exists,
-          //   'path/to/file3.txt': null,
-          //   // updates file based on current content
-          //   'path/to/file4.txt': ({ exists, encoding, content }) => {
-          //     // do not create the file if it does not exist
-          //     if (!exists) return null;
+    try {
+      const pr = await octokit.createPullRequest({
+        owner: userName,
+        repo: repoName,
+        title: commitMessage,
+        body: commitDescription,
+        base: baseBranchName /* optional: defaults to default branch */,
+        head: commitName,
+        changes: [
+          {
+            /* optional: if `files` is not passed, an empty commit is created instead */
+            files,
+            // {
+            //   'path/to/file1.txt': 'Content for file1',
+            //   'path/to/file2.png': {
+            //     content: '_base64_encoded_content_',
+            //     encoding: 'base64'
+            //   },
+            //   // deletes file if it exists,
+            //   'path/to/file3.txt': null,
+            //   // updates file based on current content
+            //   'path/to/file4.txt': ({ exists, encoding, content }) => {
+            //     // do not create the file if it does not exist
+            //     if (!exists) return null;
 
-          //     return Buffer.from(content, encoding)
-          //       .toString('utf-8')
-          //       .toUpperCase();
-          //   }
-          // },
-          commit: commitName
-        }
-      ]
-    });
+            //     return Buffer.from(content, encoding)
+            //       .toString('utf-8')
+            //       .toUpperCase();
+            //   }
+            // },
+            commit: commitName
+          }
+        ]
+      });
 
-    return pr.data.html_url;
+      return pr.data.html_url;
+    } catch (error) {
+      throw new AmplicationError('Github pr failed');
+    }
   }
 
   async getOAuthAppAuthorizationUrl(appId: string) {
