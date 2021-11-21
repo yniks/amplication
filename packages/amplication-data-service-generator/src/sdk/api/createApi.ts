@@ -1,7 +1,7 @@
 import { camelCase } from "lodash";
 import { AppInfo } from "../../index";
-import { Module, Entity } from "../../types";
-import { createEntitySdk } from "./createEntitySdk";
+import { Entity, Module } from "../../types";
+import { CreateEntityIndexFile } from "./createEntitySdk";
 
 export async function createApi(
   appInfo: AppInfo,
@@ -9,11 +9,11 @@ export async function createApi(
   entitiesDtosPath: string,
   srcDir: string
 ): Promise<Module[]> {
-  const apiDir = `${srcDir}/api`;
+  const createEntityIndexFile = new CreateEntityIndexFile();
   return Promise.all(
     entities.map((entity) =>
-      createEntitySdk(
-        apiDir,
+      createEntityIndexFile.createFile(
+        srcDir,
         `${entitiesDtosPath}/${camelCase(entity.displayName)}`,
         entity
       )

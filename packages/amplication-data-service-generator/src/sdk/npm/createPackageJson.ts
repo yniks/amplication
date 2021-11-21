@@ -5,9 +5,9 @@ const basePackageJson = {
   name: "",
   version: "1.0.0",
   description: "",
-  main: "index.js",
+  main: "./dist/index.js",
   scripts: {
-    test: 'echo "Error: no test specified" && exit 1',
+    build: "tsc",
   },
   keywords: [],
   author: "",
