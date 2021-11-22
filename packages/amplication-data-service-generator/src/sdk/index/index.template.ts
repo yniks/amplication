@@ -1,8 +1,14 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 export class SERVER_NAME {
-  axiosInstance: AxiosInstance;
-  constructor(public readonly serverBaseUrl: string) {
-    this.axiosInstance = axios.create({ baseURL: serverBaseUrl });
+  protected axiosInstance: AxiosInstance;
+  constructor(
+    serverBaseUrl: string,
+    axiosConfig: Omit<AxiosRequestConfig, "baseURL"> | null = null
+  ) {
+    this.axiosInstance = axios.create({
+      baseURL: serverBaseUrl,
+      ...axiosConfig,
+    });
   }
 }
