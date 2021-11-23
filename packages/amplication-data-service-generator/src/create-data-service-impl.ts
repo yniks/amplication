@@ -19,7 +19,7 @@ import { createServerModules } from "./server/create-server";
 import { createRootModules } from "./create-root-modules";
 import { readStaticModules } from "./read-static-modules";
 import { types } from "@amplication/data";
-import { createSdkModules } from "./sdk/createSdk";
+import { createSdkModules } from "./typescript-rest-sdk/createSdk";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 const BASE_DIRECTORY = "";
