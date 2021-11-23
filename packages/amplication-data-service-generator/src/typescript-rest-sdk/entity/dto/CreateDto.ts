@@ -1,5 +1,6 @@
 import { pascalCase } from "pascal-case";
 import { Entity, Module } from "../../../types";
+import { CreateObjectDto } from "./createObject/createObject";
 
 export class CreateDtos {
   private readonly entityDtoFolderPath: string;
@@ -12,11 +13,9 @@ export class CreateDtos {
     return { code: "", path: this.indexPath };
   }
   createObject(): Module {
-    return {
-      code: "",
-      path: `${this.entityDtoFolderPath}/${pascalCase(
-        this.entity.displayName
-      )}.ts`,
-    };
+    const createObjectDto = new CreateObjectDto(this.entity);
+    return createObjectDto.createFile(
+      `${this.entityDtoFolderPath}/${pascalCase(this.entity.displayName)}.ts`
+    );
   }
 }
