@@ -1,9 +1,9 @@
-import { EnumBuildStatus, BuildRequest } from "../types";
+import { EnumBuildStatus, BuildRequest } from "../../types";
 import {
   BuildImageOptions,
   createBuildImageOptions,
   DockerProvider,
-} from "./DockerProvider";
+} from "../../docker/DockerProvider";
 
 const EXAMPLE_TAGS = ["EXAMPLE_REPOSITORY:EXAMPLE_TAG"];
 const EXAMPLE_LOCAL_CODE_URL = `/example-directory/example-filename`;

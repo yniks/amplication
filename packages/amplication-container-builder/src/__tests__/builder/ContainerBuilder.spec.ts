@@ -1,6 +1,6 @@
-import { BuildRequest, BuildResult, EnumBuildStatus } from "../types";
-import { ContainerBuilder } from "./ContainerBuilder";
-import { InvalidDefaultError } from "./InvalidDefaultError";
+import { BuildRequest, BuildResult, EnumBuildStatus } from "../../types";
+import { ContainerBuilder } from "../../builder/ContainerBuilder";
+import { InvalidDefaultError } from "../../builder/InvalidDefaultError";
 
 const EXAMPLE_PROVIDER_NAME = "example";
 const INVALID_DEFAULT = "INVALID_DEFAULT";

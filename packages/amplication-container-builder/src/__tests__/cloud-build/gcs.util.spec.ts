@@ -4,7 +4,7 @@ import {
   NO_BUCKET_ERROR_MESSAGE,
   NO_OBJECT_ERROR_MESSAGE,
   parseGCSObjectURL,
-} from "./gcs.util";
+} from "../../cloud-build/gcs.util";
 
 const EXAMPLE_BUCKET = "example-bucket";
 const EXAMPLE_OBJECT = "example-directory/example-filename";

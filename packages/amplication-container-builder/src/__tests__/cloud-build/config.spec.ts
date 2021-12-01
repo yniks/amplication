@@ -1,5 +1,5 @@
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
-import { BuildRequest } from "../types";
+import { BuildRequest } from "../../types";
 import {
   createConfig,
   createBuildStep,
@@ -7,8 +7,8 @@ import {
   CLOUD_BUILDERS_DOCKER_IMAGE,
   createImageId,
   createDestinationParameter,
-} from "./config";
-import { GCS_HOST } from "./gcs.util";
+} from "../../cloud-build/config";
+import { GCS_HOST } from "../../cloud-build/gcs.util";
 
 const EXAMPLE_PROJECT_ID = "EXAMPLE_PROJECT_ID";
 const EXAMPLE_TAG = "EXAMPLE_REPOSITORY:EXAMPLE_TAG";

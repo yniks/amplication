@@ -1,7 +1,7 @@
-import { EnumBuildStatus } from "../types";
-import { CloudBuildProvider } from "./CloudBuildProvider";
-import { createConfig } from "./config";
-import { GCS_HOST } from "./gcs.util";
+import { EnumBuildStatus } from "../../types";
+import { CloudBuildProvider } from "../../cloud-build/CloudBuildProvider";
+import { createConfig } from "../../cloud-build/config";
+import { GCS_HOST } from "../../cloud-build/gcs.util";
 
 const EXAMPLE_PROJECT_ID = "EXAMPLE_PROJECT_ID";
 const EXAMPLE_TAGS = ["EXAMPLE_REPOSITORY:EXAMPLE_TAG"];
