@@ -3,9 +3,9 @@ import {
   DeployResult,
   EnumDeployStatus,
   Variables,
-} from "../types";
-import { Deployer } from "./Deployer";
-import { InvalidDefaultError } from "./InvalidDefaultError";
+} from "../../types";
+import { Deployer } from "../../deployer/Deployer";
+import { InvalidDefaultError } from "../../deployer/InvalidDefaultError";
 
 const EXAMPLE_PROVIDER_NAME = "example";
 const INVALID_DEFAULT = "INVALID_DEFAULT";

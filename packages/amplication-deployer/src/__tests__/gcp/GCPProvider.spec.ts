@@ -1,14 +1,14 @@
 import { Buffer } from "buffer";
 import getStream from "get-stream";
-import { createConfig } from "./config";
+import { createConfig } from "../../gcp/config";
 import {
   GCPProvider,
   TERRAFORM_MAIN_FILE_NAME,
   TERRAFORM_VARIABLES_FILE_NAME,
-} from "./GCPProvider";
-import * as modules from "./modules";
-import * as hashUtil from "./hash.util";
-import { EnumDeployStatus } from "..";
+} from "../../gcp/GCPProvider";
+import * as modules from "../../gcp/modules";
+import * as hashUtil from "../../gcp/hash.util";
+import { EnumDeployStatus } from "../..";
 
 const EXAMPLE_PROJECT_ID = "EXAMPLE_PROJECT_ID";
 const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
@@ -45,7 +45,7 @@ const MOCK_STORAGE = {
   bucket: storageBucketMock,
 };
 
-jest.mock("./modules");
+jest.mock("../../gcp/modules");
 const entryEndMock = jest.fn();
 const packEntryMock = jest.fn(() => ({
   end: entryEndMock,
@@ -65,7 +65,7 @@ jest.mock("get-stream");
 // @ts-ignore
 getStream.buffer.mockImplementation(() => EXAMPLE_BUFFER);
 
-jest.mock("./hash.util.ts");
+jest.mock("../../gcp/hash.util.ts");
 // @ts-ignore
 hashUtil.createHash.mockImplementation(() => EXAMPLE_HASH);
 

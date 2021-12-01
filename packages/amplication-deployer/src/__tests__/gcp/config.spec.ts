@@ -5,7 +5,7 @@ import {
   APPLY_STEP,
   OUTPUT_STEP,
   DEFAULT_TAGS,
-} from "./config";
+} from "../../gcp/config";
 
 const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
 const EXAMPLE_ARCHIVE_NAME = "EXAMPLE_ARCHIVE_NAME";
