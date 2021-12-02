@@ -11,6 +11,12 @@
         "admin-template",
         "server-template"
       ]
+    },
+    "exec": {
+      "ignore": [
+        "admin-template",
+        "server-template"
+      ]
     }
   }
 }
