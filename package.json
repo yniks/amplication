@@ -9,6 +9,7 @@
     "lint": "lerna run --parallel --ignore server-template --ignore admin-template lint",
     "bootstrap": "lerna bootstrap",
     "clean": "lerna clean",
+    "prune:dev": "lerna exec -- npm prune --production",
     "prisma:generate": "lerna run --scope @amplication/server prisma:generate",
     "migrate:save": "lerna run --scope @amplication/server migrate:save",
     "migrate:up": "lerna run --scope @amplication/server migrate:up",
