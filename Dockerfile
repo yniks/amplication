@@ -25,8 +25,9 @@ ENV OPENCOLLECTIVE_HIDE=1
 #install all node_nodules in '/app/packages'
 RUN npm run bootstrap -- --loglevel=${NPM_LOG_LEVEL} --scope @amplication/server --scope @amplication/client --include-dependencies
 
-#copy the content (code) from packages to /app/packages (mode_modules folders stay in place )
-COPY packages packages
+#copy the content (code) from packages to /app/packages (node_modules folders stay in place)
+# is this nesesery
+COPY packages packages 
 
 # generate the prisma orm in the server
 RUN npm run prisma:generate
