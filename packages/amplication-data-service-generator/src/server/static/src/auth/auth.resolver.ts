@@ -1,6 +1,6 @@
-import * as common from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import * as gqlACGuard from "../auth/gqlAC.guard";
+import { GqlACGuard } from "../auth/gqlAC.guard";
 import { AuthService } from "./auth.service";
 import { GqlDefaultAuthGuard } from "./gqlDefaultAuth.guard";
 import { UserData } from "./gqlUserData.decorator";
@@ -16,7 +16,7 @@ export class AuthResolver {
   }
 
   @Query(() => UserInfo)
-  @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+  @UseGuards(GqlDefaultAuthGuard, GqlACGuard)
   async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;
   }
