@@ -24,7 +24,7 @@ describe('GithubService', () => {
       'server/src/auth/token.service.ts',
       'server/src/auth/password.service.ts',
       'server/src/auth/auth.resolver.ts',
-      'server/src/auth/auth.module.ts' //TODO
+      'server/src/auth/auth.module.ts' //TODO function test
       // 'server/src/auth/UserInfo.ts' //TODO
       //#endregion
       //#region auth strategy
