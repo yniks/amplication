@@ -19,10 +19,14 @@ describe('GithubService', () => {
     const adminUiFiles: string[] = ['admin-ui/src/entity/OrderShow.tsx'];
     const customerCustomFiles: string[] = [
       'server/src/entity/entity.service.ts',
+      //#region auth
       'server/src/auth/auth.service.ts',
       'server/src/auth/token.service.ts',
       'server/src/auth/password.service.ts',
-      'server/src/auth/UserInfo.ts'
+      'server/src/auth/auth.resolver.ts', //TODO
+      'server/src/auth/auth.module.ts' //TODO
+      // 'server/src/auth/UserInfo.ts' //TODO
+      //#endregion
       //#region auth strategy
       // { code: '', path: 'server/src/auth/jwt/jwt.strategy.ts' }, //TODO
       // { code: '', path: 'server/src/auth/basic/basic.strategy.ts' }, //TODO
@@ -37,7 +41,6 @@ describe('GithubService', () => {
       const module: Module = { code: placeHolderCode, path };
       const expectedResult = JSON.stringify({ [path]: placeHolderCode });
       const result = JSON.stringify(githubService.prepareFilesForPr([module]));
-
       expect(result).toBe(expectedResult);
     });
     test.each(customerCustomFiles)('%s', path => {

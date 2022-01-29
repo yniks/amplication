@@ -1,6 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PasswordService } from "./password.service";
+import { PasswordServiceBase } from "./password.service.base";
 import * as bcrypt from "bcrypt";
 
 const EXAMPLE_PASSWORD = "examplePassword";
@@ -20,14 +20,14 @@ bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
 //@ts-ignore
 bcrypt.compare.mockImplementation(async () => true);
 
-describe("PasswordService", () => {
-  let service: PasswordService;
+describe("PasswordServiceBase", () => {
+  let service: PasswordServiceBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PasswordService,
+        PasswordServiceBase,
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
@@ -38,7 +38,7 @@ describe("PasswordService", () => {
       imports: [],
     }).compile();
 
-    service = module.get<PasswordService>(PasswordService);
+    service = module.get<PasswordServiceBase>(PasswordServiceBase);
   });
 
   it("should be defined", () => {
