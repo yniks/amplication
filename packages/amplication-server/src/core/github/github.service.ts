@@ -1,3 +1,4 @@
+import { Module } from '@amplication/data-service-generator';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuthApp } from '@octokit/oauth-app';
@@ -7,6 +8,11 @@ import { OAuthApp } from '@octokit/oauth-app';
 import { components } from '@octokit/openapi-types';
 import { Octokit } from '@octokit/rest';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import {
+  File,
+  UpdateFunction,
+  UpdateFunctionFile
+} from 'octokit-plugin-create-pull-request/dist-types/types';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
@@ -190,40 +196,7 @@ export class GithubService implements IGitClient {
       auth: TOKEN
     });
 
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
-    //do not override server/scripts/customSeed.ts
-    const doNotOverride = [
-      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
-      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
-      /^server\/src\/[^\/]+\/.+\.service.ts$/,
-      /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/scripts\/customSeed.ts$/
-    ];
-
-    const authFolder = 'server/src/auth';
-
-    //TODO fix auth dont overwrites
-    //TODO extract this logic to standalone function for testing
-    const files = Object.fromEntries(
-      modules.map(module => {
-        if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
-        ) {
-          return [
-            module.path,
-            ({ exists }) => {
-              // do not create the file if it already exist
-              if (exists) return null;
-
-              return module.code;
-            }
-          ];
-        }
-
-        return [module.path, module.code];
-      })
-    );
+    const files = this.prepareFilesForPr(modules);
 
     //todo: delete files that are no longer part of the app
 
@@ -337,5 +310,39 @@ export class GithubService implements IGitClient {
     });
     const user = await octokit.users.getAuthenticated();
     return { username: user.data.login };
+  }
+
+  prepareFilesForPr(
+    modules: Module[]
+  ): { [path: string]: string | File | UpdateFunction } {
+    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
+    //do not override server/scripts/customSeed.ts
+    const doNotOverride = [
+      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
+      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
+      /^server\/src\/[^\/]+\/.+\.service.ts$/,
+      /^server\/src\/[^\/]+\/.+\.module.ts$/,
+      /^server\/scripts\/customSeed.ts$/
+    ];
+
+    const authFolder = 'server/src/auth';
+
+    //TODO fix auth dont overwrites
+    const filesObject = {};
+    for (const module of modules) {
+      const isRegexValid = doNotOverride.some(rx => rx.test(module.path));
+      if (!module.path.startsWith(authFolder) && isRegexValid) {
+        filesObject[module.path] = (file: UpdateFunctionFile) => {
+          // do not create the file if it already exist
+          if (file.exists) return null;
+
+          return module.code;
+        };
+        continue;
+      }
+      filesObject[module.path] = module.code;
+    }
+
+    return filesObject;
   }
 }
