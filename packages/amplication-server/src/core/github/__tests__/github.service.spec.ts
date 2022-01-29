@@ -19,7 +19,15 @@ describe('GithubService', () => {
       { code: '', path: 'admin-ui/src/entity/OrderShow.tsx' }
     ];
     const customerCustomFiles: Module[] = [
-      { code: '', path: 'server/src/entity/entity.service.ts' }
+      { code: '', path: 'server/src/entity/entity.service.ts' },
+      { code: '', path: 'server/src/auth/auth.service.ts' },
+      { code: '', path: 'server/src/auth/token.service.ts' },
+      { code: '', path: 'server/src/auth/password.service.ts' },
+      { code: '', path: 'server/src/auth/UserInfo.ts' }
+      //#region auth strategy
+      // { code: '', path: 'server/src/auth/jwt/jwt.strategy.ts' }, //TODO
+      // { code: '', path: 'server/src/auth/basic/basic.strategy.ts' }, //TODO
+      //#endregion
     ];
     const amplicationFiles: Module[] = [
       { code: '', path: 'server/src/auth/base/auth.service.base.ts' },
