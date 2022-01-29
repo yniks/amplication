@@ -331,7 +331,8 @@ export class GithubService implements IGitClient {
     const filesObject = {};
     for (const module of modules) {
       const isRegexValid = doNotOverride.some(rx => rx.test(module.path));
-      if (!module.path.startsWith(authFolder) && isRegexValid) {
+      const isFromAuthFolder = module.path.startsWith(authFolder);
+      if (isFromAuthFolder === false && isRegexValid) {
         filesObject[module.path] = (file: UpdateFunctionFile) => {
           // do not create the file if it already exist
           if (file.exists) return null;
