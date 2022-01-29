@@ -23,7 +23,7 @@ describe('GithubService', () => {
       'server/src/auth/auth.service.ts',
       'server/src/auth/token.service.ts',
       'server/src/auth/password.service.ts',
-      'server/src/auth/auth.resolver.ts', //TODO
+      'server/src/auth/auth.resolver.ts',
       'server/src/auth/auth.module.ts' //TODO
       // 'server/src/auth/UserInfo.ts' //TODO
       //#endregion
@@ -34,6 +34,7 @@ describe('GithubService', () => {
     ];
     const amplicationFiles: string[] = [
       'server/src/auth/base/auth.service.base.ts',
+      'server/src/auth//base/auth.resolver.base.ts',
       ...adminUiFiles // make sure that any admin-ui file is amplication file
     ];
 
