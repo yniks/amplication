@@ -202,6 +202,8 @@ export class GithubService implements IGitClient {
 
     const authFolder = 'server/src/auth';
 
+    //TODO fix auth dont overwrites
+    //TODO extract this logic to standalone function for testing
     const files = Object.fromEntries(
       modules.map(module => {
         if (

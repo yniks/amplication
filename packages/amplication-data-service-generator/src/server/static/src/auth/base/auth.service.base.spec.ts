@@ -4,13 +4,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { User } from "src/user/base/User";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService } from "../user/user.service";
-import { AuthService } from "./auth.service";
-import { Credentials } from "./Credentials";
-import { PasswordService } from "./password.service";
-// @ts-ignore
-// eslint-disable-next-line
-import { TokenService } from "./token.service";
+import { UserService } from "../../user/user.service";
+import { AuthServiceBase } from "./auth.service.base";
+import { Credentials } from "../Credentials";
+import { PasswordService } from "../password.service";
+import { TokenService } from "../token.service";
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
@@ -53,9 +51,9 @@ const tokenService = {
   },
 };
 
-describe("AuthService", () => {
+describe("AuthServiceBase", () => {
   //ARRANGE
-  let service: AuthService;
+  let service: AuthServiceBase;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -71,11 +69,11 @@ describe("AuthService", () => {
           provide: TokenService,
           useValue: tokenService,
         },
-        AuthService,
+        AuthServiceBase,
       ],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
+    service = module.get<AuthServiceBase>(AuthServiceBase);
   });
 
   it("should be defined", () => {
