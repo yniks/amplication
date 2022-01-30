@@ -4,7 +4,7 @@ import {
   ButtonProps as PrimerButtonProps,
 } from "@primer/react";
 import classNames from "classnames";
-import { Icon } from "../Icon/Icon";
+import { Icon } from "../../";
 import { isEmpty } from "lodash";
 import "./Button.scss";
 

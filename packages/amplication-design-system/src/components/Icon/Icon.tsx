@@ -6,7 +6,7 @@ import "./Icon.scss";
 
 type IconSize = "xsmall" | "small" | "medium" | "large" | "xlarge";
 
-export type Props = {
+export type IconProps = {
   icon: string;
   size?: IconSize;
   className?: string;
@@ -14,7 +14,7 @@ export type Props = {
 
 const CLASS_NAME = "amp-icon";
 
-export function Icon(props: Props) {
+export function Icon(props: IconProps) {
   return (
     <i
       className={classNames(CLASS_NAME, props.className, {

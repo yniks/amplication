@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "../Icon/Icon";
+import { Icon } from "../../";
 import classNames from "classnames";
 import "./CircleIcon.scss";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import { Icon } from "../Icon/Icon";
+import { Icon } from "../../";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
 import { Label } from "../Label/Label";
