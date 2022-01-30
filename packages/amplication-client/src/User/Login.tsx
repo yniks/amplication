@@ -1,24 +1,23 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { Location } from "history";
-import { useHistory, useLocation, Link } from "react-router-dom";
+import {
+  CircularProgress,
+  Snackbar,
+  TextField,
+} from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
-import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
-import { setToken } from "../authentication/authentication";
-import { formatError } from "../util/error";
-import {
-  TextField,
-  Snackbar,
-  Icon,
-  CircularProgress,
-} from "@amplication/design-system";
-import { Button } from "../Components/Button";
-import { Form } from "../Components/Form";
+import { Location } from "history";
 import queryString from "query-string";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Link, useHistory, useLocation } from "react-router-dom";
+import { setToken } from "../authentication/authentication";
+import { Button } from "../Components/Button";
+import { ErrorMessage } from "../Components/ErrorMessage";
+import { Form } from "../Components/Form";
+import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
+import WelcomePage from "../Layout/WelcomePage";
+import { formatError } from "../util/error";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
-import WelcomePage from "../Layout/WelcomePage";
-import {ErrorMessage} from "../Components/ErrorMessage";
 import "./Login.scss";
 
 type Values = {
@@ -89,8 +88,7 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-
-          {urlError && <ErrorMessage errorMessage={urlError}/>}
+          {urlError && <ErrorMessage errorMessage={urlError} />}
 
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
@@ -108,7 +106,7 @@ const Login = () => {
             </>
           ) : (
             <>
-            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
+              {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
               <TextField
                 label="Email"
                 name="email"
