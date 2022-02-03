@@ -25,6 +25,10 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
     setPanelOpen(!panelOpen);
   }, [panelOpen, setPanelOpen]);
 
+  const handleClosePanel = useCallback(() => {
+    setPanelOpen(false);
+  }, [setPanelOpen]);
+
   const pendingChanges = pendingChangesContext.pendingChanges;
 
   const pendingChangesBadge =
@@ -54,7 +58,10 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
       </div>
       {panelOpen && (
         <MenuFixedPanel.Source>
-          <PendingChangesBar applicationId={applicationId} />
+          <PendingChangesBar
+            applicationId={applicationId}
+            closeFunction={handleClosePanel}
+          />
         </MenuFixedPanel.Source>
       )}
     </div>
