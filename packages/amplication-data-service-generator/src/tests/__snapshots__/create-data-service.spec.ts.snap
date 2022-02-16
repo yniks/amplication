@@ -38,6 +38,14 @@ import { EmptyList } from \\"./empty/EmptyList\\";
 import { EmptyCreate } from \\"./empty/EmptyCreate\\";
 import { EmptyEdit } from \\"./empty/EmptyEdit\\";
 import { EmptyShow } from \\"./empty/EmptyShow\\";
+import { ManList } from \\"./man/ManList\\";
+import { ManCreate } from \\"./man/ManCreate\\";
+import { ManEdit } from \\"./man/ManEdit\\";
+import { ManShow } from \\"./man/ManShow\\";
+import { WomenList } from \\"./women/WomenList\\";
+import { WomenCreate } from \\"./women/WomenCreate\\";
+import { WomenEdit } from \\"./women/WomenEdit\\";
+import { WomenShow } from \\"./women/WomenShow\\";
 import { httpAuthProvider } from \\"./auth-provider/ra-auth-http\\";
 
 const App = (): React.ReactElement => {
@@ -98,6 +106,20 @@ const App = (): React.ReactElement => {
           edit={EmptyEdit}
           create={EmptyCreate}
           show={EmptyShow}
+        />
+        <Resource
+          name=\\"Man\\"
+          list={ManList}
+          edit={ManEdit}
+          create={ManCreate}
+          show={ManShow}
+        />
+        <Resource
+          name=\\"Women\\"
+          list={WomenList}
+          edit={WomenEdit}
+          create={WomenCreate}
+          show={WomenShow}
         />
       </Admin>
     </div>
@@ -448,6 +470,80 @@ export type EmptyWhereInput = {
   id: string;
 };
 ",
+  "admin-ui/src/api/man/CreateManArgs.ts": "import { ManCreateInput } from \\"./ManCreateInput\\";
+
+export type CreateManArgs = {
+  data: ManCreateInput;
+};
+",
+  "admin-ui/src/api/man/DeleteManArgs.ts": "import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+
+export type DeleteManArgs = {
+  where: ManWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/man/Man.ts": "import { Women } from \\"../women/Women\\";
+
+export type Man = {
+  id: string;
+  woman?: Women;
+};
+",
+  "admin-ui/src/api/man/ManCreateInput.ts": "import { WomenWhereUniqueInput } from \\"../women/WomenWhereUniqueInput\\";
+
+export type ManCreateInput = {
+  woman?: WomenWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/man/ManFindManyArgs.ts": "import { ManWhereInput } from \\"./ManWhereInput\\";
+import { ManOrderByInput } from \\"./ManOrderByInput\\";
+
+export type ManFindManyArgs = {
+  where?: ManWhereInput;
+  orderBy?: ManOrderByInput;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/man/ManFindUniqueArgs.ts": "import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+
+export type ManFindUniqueArgs = {
+  where: ManWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/man/ManOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type ManOrderByInput = {
+  id?: SortOrder;
+  womanId?: SortOrder;
+};
+",
+  "admin-ui/src/api/man/ManUpdateInput.ts": "import { WomenWhereUniqueInput } from \\"../women/WomenWhereUniqueInput\\";
+
+export type ManUpdateInput = {
+  woman?: WomenWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/man/ManWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+import { WomenWhereUniqueInput } from \\"../women/WomenWhereUniqueInput\\";
+
+export type ManWhereInput = {
+  id?: StringFilter;
+  woman?: WomenWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/man/ManWhereUniqueInput.ts": "export type ManWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/api/man/UpdateManArgs.ts": "import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+import { ManUpdateInput } from \\"./ManUpdateInput\\";
+
+export type UpdateManArgs = {
+  where: ManWhereUniqueInput;
+  data: ManUpdateInput;
+};
+",
   "admin-ui/src/api/order/CreateOrderArgs.ts": "import { OrderCreateInput } from \\"./OrderCreateInput\\";
 
 export type CreateOrderArgs = {
@@ -783,6 +879,80 @@ export type UserWhereInput = {
 };
 ",
   "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/api/women/CreateWomenArgs.ts": "import { WomenCreateInput } from \\"./WomenCreateInput\\";
+
+export type CreateWomenArgs = {
+  data: WomenCreateInput;
+};
+",
+  "admin-ui/src/api/women/DeleteWomenArgs.ts": "import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+
+export type DeleteWomenArgs = {
+  where: WomenWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/women/UpdateWomenArgs.ts": "import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+import { WomenUpdateInput } from \\"./WomenUpdateInput\\";
+
+export type UpdateWomenArgs = {
+  where: WomenWhereUniqueInput;
+  data: WomenUpdateInput;
+};
+",
+  "admin-ui/src/api/women/Women.ts": "import { Man } from \\"../man/Man\\";
+
+export type Women = {
+  id: string;
+  man?: Man | null;
+};
+",
+  "admin-ui/src/api/women/WomenCreateInput.ts": "import { ManWhereUniqueInput } from \\"../man/ManWhereUniqueInput\\";
+
+export type WomenCreateInput = {
+  man?: ManWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/women/WomenFindManyArgs.ts": "import { WomenWhereInput } from \\"./WomenWhereInput\\";
+import { WomenOrderByInput } from \\"./WomenOrderByInput\\";
+
+export type WomenFindManyArgs = {
+  where?: WomenWhereInput;
+  orderBy?: WomenOrderByInput;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/women/WomenFindUniqueArgs.ts": "import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+
+export type WomenFindUniqueArgs = {
+  where: WomenWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/women/WomenOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type WomenOrderByInput = {
+  id?: SortOrder;
+  manId?: SortOrder;
+};
+",
+  "admin-ui/src/api/women/WomenUpdateInput.ts": "import { ManWhereUniqueInput } from \\"../man/ManWhereUniqueInput\\";
+
+export type WomenUpdateInput = {
+  man?: ManWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/women/WomenWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+import { ManWhereUniqueInput } from \\"../man/ManWhereUniqueInput\\";
+
+export type WomenWhereInput = {
+  id?: StringFilter;
+  man?: ManWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/women/WomenWhereUniqueInput.ts": "export type WomenWhereUniqueInput = {
   id: string;
 };
 ",
@@ -1429,6 +1599,111 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+",
+  "admin-ui/src/man/ManCreate.tsx": "import * as React from \\"react\\";
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { WomenTitle } from \\"../women/WomenTitle\\";
+
+export const ManCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <ReferenceInput source=\\"women.id\\" reference=\\"Women\\" label=\\"Woman\\">
+          <SelectInput optionText={WomenTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/man/ManEdit.tsx": "import * as React from \\"react\\";
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { WomenTitle } from \\"../women/WomenTitle\\";
+
+export const ManEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <ReferenceInput source=\\"women.id\\" reference=\\"Women\\" label=\\"Woman\\">
+          <SelectInput optionText={WomenTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/man/ManList.tsx": "import * as React from \\"react\\";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  ReferenceField,
+} from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+import { WOMEN_TITLE_FIELD } from \\"../women/WomenTitle\\";
+
+export const ManList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Men\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <ReferenceField label=\\"Woman\\" source=\\"women.id\\" reference=\\"Women\\">
+          <TextField source={WOMEN_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/man/ManShow.tsx": "import * as React from \\"react\\";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  ReferenceField,
+} from \\"react-admin\\";
+import { WOMEN_TITLE_FIELD } from \\"../women/WomenTitle\\";
+
+export const ManShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <ReferenceField label=\\"Woman\\" source=\\"women.id\\" reference=\\"Women\\">
+          <TextField source={WOMEN_TITLE_FIELD} />
+        </ReferenceField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/man/ManTitle.ts": "import { Man as TMan } from \\"../api/man/Man\\";
+
+export const MAN_TITLE_FIELD = \\"id\\";
+
+export const ManTitle = (record: TMan): string => {
+  return record.id || record.id;
+};
 ",
   "admin-ui/src/order/OrderCreate.tsx": "import * as React from \\"react\\";
 import {
@@ -2260,6 +2535,111 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "admin-ui/src/women/WomenCreate.tsx": "import * as React from \\"react\\";
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { ManTitle } from \\"../man/ManTitle\\";
+
+export const WomenCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <ReferenceInput source=\\"man.id\\" reference=\\"Man\\" label=\\"Man\\">
+          <SelectInput optionText={ManTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/women/WomenEdit.tsx": "import * as React from \\"react\\";
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { ManTitle } from \\"../man/ManTitle\\";
+
+export const WomenEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <ReferenceInput source=\\"man.id\\" reference=\\"Man\\" label=\\"Man\\">
+          <SelectInput optionText={ManTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/women/WomenList.tsx": "import * as React from \\"react\\";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  ReferenceField,
+} from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+import { MAN_TITLE_FIELD } from \\"../man/ManTitle\\";
+
+export const WomenList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Womans\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <ReferenceField label=\\"Man\\" source=\\"man.id\\" reference=\\"Man\\">
+          <TextField source={MAN_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/women/WomenShow.tsx": "import * as React from \\"react\\";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  ReferenceField,
+} from \\"react-admin\\";
+import { MAN_TITLE_FIELD } from \\"../man/ManTitle\\";
+
+export const WomenShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <ReferenceField label=\\"Man\\" source=\\"man.id\\" reference=\\"Man\\">
+          <TextField source={MAN_TITLE_FIELD} />
+        </ReferenceField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/women/WomenTitle.ts": "import { Women as TWomen } from \\"../api/women/Women\\";
+
+export const WOMEN_TITLE_FIELD = \\"id\\";
+
+export const WomenTitle = (record: TWomen): string => {
+  return record.id || record.id;
+};
+",
   "server/.env": "POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
@@ -2345,6 +2725,17 @@ model Empty {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Man {
+  id    String @id @default(cuid())
+  woman Women
+}
+
+model Women {
+  id    String  @id @default(cuid())
+  man   Man?    @relation(fields: [manId], references: [id])
+  manId String? @unique
 }
 
 enum EnumUserInterests {
@@ -2520,6 +2911,8 @@ import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
+import { ManModule } from \\"./man/man.module\\";
+import { WomenModule } from \\"./women/women.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
@@ -2538,6 +2931,8 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     OrganizationModule,
     CustomerModule,
     EmptyModule,
+    ManModule,
+    WomenModule,
     ACLModule,
     AuthModule,
     HealthModule,
@@ -6828,6 +7223,1170 @@ async function main() {
 }
 
 module.exports = main();
+",
+  "server/src/man/base/CreateManArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ManCreateInput } from \\"./ManCreateInput\\";
+
+@ArgsType()
+class CreateManArgs {
+  @Field(() => ManCreateInput, { nullable: false })
+  data!: ManCreateInput;
+}
+
+export { CreateManArgs };
+",
+  "server/src/man/base/DeleteManArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteManArgs {
+  @Field(() => ManWhereUniqueInput, { nullable: false })
+  where!: ManWhereUniqueInput;
+}
+
+export { DeleteManArgs };
+",
+  "server/src/man/base/Man.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
+import { Women } from \\"../../women/base/Women\\";
+import { Type } from \\"class-transformer\\";
+@ObjectType()
+class Man {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => Women,
+  })
+  @ValidateNested()
+  @Type(() => Women)
+  @IsOptional()
+  woman?: Women;
+}
+export { Man };
+",
+  "server/src/man/base/ManCreateInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { WomenWhereUniqueInput } from \\"../../women/base/WomenWhereUniqueInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class ManCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => WomenWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => WomenWhereUniqueInput)
+  @IsOptional()
+  @Field(() => WomenWhereUniqueInput, {
+    nullable: true,
+  })
+  woman?: WomenWhereUniqueInput;
+}
+export { ManCreateInput };
+",
+  "server/src/man/base/ManFindManyArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ManWhereInput } from \\"./ManWhereInput\\";
+import { Type } from \\"class-transformer\\";
+import { ManOrderByInput } from \\"./ManOrderByInput\\";
+
+@ArgsType()
+class ManFindManyArgs {
+  @ApiProperty({
+    required: false,
+    type: () => ManWhereInput,
+  })
+  @Field(() => ManWhereInput, { nullable: true })
+  @Type(() => ManWhereInput)
+  where?: ManWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: ManOrderByInput,
+  })
+  @Field(() => ManOrderByInput, { nullable: true })
+  @Type(() => ManOrderByInput)
+  orderBy?: ManOrderByInput;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  skip?: number;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  take?: number;
+}
+
+export { ManFindManyArgs };
+",
+  "server/src/man/base/ManFindUniqueArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+
+@ArgsType()
+class ManFindUniqueArgs {
+  @Field(() => ManWhereUniqueInput, { nullable: false })
+  where!: ManWhereUniqueInput;
+}
+
+export { ManFindUniqueArgs };
+",
+  "server/src/man/base/ManOrderByInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class ManOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  womanId?: SortOrder;
+}
+
+export { ManOrderByInput };
+",
+  "server/src/man/base/ManUpdateInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { WomenWhereUniqueInput } from \\"../../women/base/WomenWhereUniqueInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class ManUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: () => WomenWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => WomenWhereUniqueInput)
+  @IsOptional()
+  @Field(() => WomenWhereUniqueInput, {
+    nullable: true,
+  })
+  woman?: WomenWhereUniqueInput;
+}
+export { ManUpdateInput };
+",
+  "server/src/man/base/ManWhereInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, ValidateNested } from \\"class-validator\\";
+import { WomenWhereUniqueInput } from \\"../../women/base/WomenWhereUniqueInput\\";
+@InputType()
+class ManWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => WomenWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => WomenWhereUniqueInput)
+  @IsOptional()
+  @Field(() => WomenWhereUniqueInput, {
+    nullable: true,
+  })
+  woman?: WomenWhereUniqueInput;
+}
+export { ManWhereInput };
+",
+  "server/src/man/base/ManWhereUniqueInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+@InputType()
+class ManWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+}
+export { ManWhereUniqueInput };
+",
+  "server/src/man/base/UpdateManArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+import { ManUpdateInput } from \\"./ManUpdateInput\\";
+
+@ArgsType()
+class UpdateManArgs {
+  @Field(() => ManWhereUniqueInput, { nullable: false })
+  where!: ManWhereUniqueInput;
+  @Field(() => ManUpdateInput, { nullable: false })
+  data!: ManUpdateInput;
+}
+
+export { UpdateManArgs };
+",
+  "server/src/man/base/man.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { ManController } from \\"../man.controller\\";
+import { ManService } from \\"../man.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Man\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ManService,
+          useValue: service,
+        },
+      ],
+      controllers: [ManController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /men\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/men\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect(CREATE_RESULT);
+  });
+
+  test(\\"GET /men\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/men\\")
+      .expect(HttpStatus.OK)
+      .expect([FIND_MANY_RESULT[0]]);
+  });
+
+  test(\\"GET /men/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/men\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /men/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/men\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect(FIND_ONE_RESULT);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/man/base/man.controller.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestMorgan from \\"nest-morgan\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { ManService } from \\"../man.service\\";
+import { ManCreateInput } from \\"./ManCreateInput\\";
+import { ManWhereInput } from \\"./ManWhereInput\\";
+import { ManWhereUniqueInput } from \\"./ManWhereUniqueInput\\";
+import { ManFindManyArgs } from \\"./ManFindManyArgs\\";
+import { ManUpdateInput } from \\"./ManUpdateInput\\";
+import { Man } from \\"./Man\\";
+@swagger.ApiBasicAuth()
+export class ManControllerBase {
+  constructor(
+    protected readonly service: ManService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Post()
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiCreatedResponse({ type: Man })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async create(
+    @common.Body() data: ManCreateInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Man> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Man\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return await this.service.create({
+      data: {
+        ...data,
+
+        woman: data.woman
+          ? {
+              connect: data.woman,
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+
+        woman: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Get()
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: [Man] })
+  @swagger.ApiForbiddenResponse()
+  @ApiNestedQuery(ManFindManyArgs)
+  async findMany(
+    @common.Req() request: Request,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Man[]> {
+    const args = plainToClass(ManFindManyArgs, request.query);
+
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+
+        woman: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Get(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  @swagger.ApiOkResponse({ type: Man })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async findOne(
+    @common.Param() params: ManWhereUniqueInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Man | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Man\\",
+    });
+    const result = await this.service.findOne({
+      where: params,
+      select: {
+        id: true,
+
+        woman: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Patch(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: Man })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async update(
+    @common.Param() params: ManWhereUniqueInput,
+    @common.Body()
+    data: ManUpdateInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Man | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Man\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      return await this.service.update({
+        where: params,
+        data: {
+          ...data,
+
+          woman: data.woman
+            ? {
+                connect: data.woman,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+
+          woman: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Delete(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: Man })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async delete(
+    @common.Param() params: ManWhereUniqueInput
+  ): Promise<Man | null> {
+    try {
+      return await this.service.delete({
+        where: params,
+        select: {
+          id: true,
+
+          woman: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
+  "server/src/man/base/man.module.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class ManModuleBase {}
+",
+  "server/src/man/base/man.resolver.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { CreateManArgs } from \\"./CreateManArgs\\";
+import { UpdateManArgs } from \\"./UpdateManArgs\\";
+import { DeleteManArgs } from \\"./DeleteManArgs\\";
+import { ManFindManyArgs } from \\"./ManFindManyArgs\\";
+import { ManFindUniqueArgs } from \\"./ManFindUniqueArgs\\";
+import { Man } from \\"./Man\\";
+import { Women } from \\"../../women/base/Women\\";
+import { ManService } from \\"../man.service\\";
+
+@graphql.Resolver(() => Man)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+export class ManResolverBase {
+  constructor(
+    protected readonly service: ManService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _menMeta(
+    @graphql.Args() args: ManFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
+
+  @graphql.Query(() => [Man])
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async men(
+    @graphql.Args() args: ManFindManyArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Man[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const results = await this.service.findMany(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => Man, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async man(
+    @graphql.Args() args: ManFindUniqueArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Man | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Man\\",
+    });
+    const result = await this.service.findOne(args);
+    if (result === null) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => Man)
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async createMan(
+    @graphql.Args() args: CreateManArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Man> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new apollo.ApolloError(
+        \`providing the properties: \${properties} on \${\\"Man\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        woman: args.data.woman
+          ? {
+              connect: args.data.woman,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Man)
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateMan(
+    @graphql.Args() args: UpdateManArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Man | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new apollo.ApolloError(
+        \`providing the properties: \${properties} on \${\\"Man\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          woman: args.data.woman
+            ? {
+                connect: args.data.woman,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Man)
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async deleteMan(@graphql.Args() args: DeleteManArgs): Promise<Man | null> {
+    try {
+      // @ts-ignore
+      return await this.service.delete(args);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.ResolveField(() => Women, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Man\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async woman(
+    @graphql.Parent() parent: Man,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Women | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const result = await this.service.getWoman(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+}
+",
+  "server/src/man/base/man.service.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { PrismaService } from \\"nestjs-prisma\\";
+import { Prisma, Man, Women } from \\"@prisma/client\\";
+
+export class ManServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.ManFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ManFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.man.count(args);
+  }
+
+  async findMany<T extends Prisma.ManFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ManFindManyArgs>
+  ): Promise<Man[]> {
+    return this.prisma.man.findMany(args);
+  }
+  async findOne<T extends Prisma.ManFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ManFindUniqueArgs>
+  ): Promise<Man | null> {
+    return this.prisma.man.findUnique(args);
+  }
+  async create<T extends Prisma.ManCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ManCreateArgs>
+  ): Promise<Man> {
+    return this.prisma.man.create<T>(args);
+  }
+  async update<T extends Prisma.ManUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ManUpdateArgs>
+  ): Promise<Man> {
+    return this.prisma.man.update<T>(args);
+  }
+  async delete<T extends Prisma.ManDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ManDeleteArgs>
+  ): Promise<Man> {
+    return this.prisma.man.delete(args);
+  }
+
+  async getWoman(parentId: string): Promise<Women | null> {
+    return this.prisma.man
+      .findUnique({
+        where: { id: parentId },
+      })
+      .woman();
+  }
+}
+",
+  "server/src/man/man.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { ManService } from \\"./man.service\\";
+import { ManControllerBase } from \\"./base/man.controller.base\\";
+
+@swagger.ApiTags(\\"men\\")
+@common.Controller(\\"men\\")
+export class ManController extends ManControllerBase {
+  constructor(
+    protected readonly service: ManService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/man/man.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { ManModuleBase } from \\"./base/man.module.base\\";
+import { ManService } from \\"./man.service\\";
+import { ManController } from \\"./man.controller\\";
+import { ManResolver } from \\"./man.resolver\\";
+
+@Module({
+  imports: [ManModuleBase],
+  controllers: [ManController],
+  providers: [ManService, ManResolver],
+  exports: [ManService],
+})
+export class ManModule {}
+",
+  "server/src/man/man.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { ManResolverBase } from \\"./base/man.resolver.base\\";
+import { Man } from \\"./base/Man\\";
+import { ManService } from \\"./man.service\\";
+
+@graphql.Resolver(() => Man)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+export class ManResolver extends ManResolverBase {
+  constructor(
+    protected readonly service: ManService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/man/man.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { ManServiceBase } from \\"./base/man.service.base\\";
+
+@Injectable()
+export class ManService extends ManServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+}
 ",
   "server/src/order/base/CreateOrderArgs.ts": "/*
 //------------------------------------------------------------------------------ 
@@ -14013,6 +15572,1172 @@ export class StringNullableFilter {
   })
   @Type(() => String)
   not?: string;
+}
+",
+  "server/src/women/base/CreateWomenArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { WomenCreateInput } from \\"./WomenCreateInput\\";
+
+@ArgsType()
+class CreateWomenArgs {
+  @Field(() => WomenCreateInput, { nullable: false })
+  data!: WomenCreateInput;
+}
+
+export { CreateWomenArgs };
+",
+  "server/src/women/base/DeleteWomenArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteWomenArgs {
+  @Field(() => WomenWhereUniqueInput, { nullable: false })
+  where!: WomenWhereUniqueInput;
+}
+
+export { DeleteWomenArgs };
+",
+  "server/src/women/base/UpdateWomenArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+import { WomenUpdateInput } from \\"./WomenUpdateInput\\";
+
+@ArgsType()
+class UpdateWomenArgs {
+  @Field(() => WomenWhereUniqueInput, { nullable: false })
+  where!: WomenWhereUniqueInput;
+  @Field(() => WomenUpdateInput, { nullable: false })
+  data!: WomenUpdateInput;
+}
+
+export { UpdateWomenArgs };
+",
+  "server/src/women/base/Women.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
+import { Man } from \\"../../man/base/Man\\";
+import { Type } from \\"class-transformer\\";
+@ObjectType()
+class Women {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => Man,
+  })
+  @ValidateNested()
+  @Type(() => Man)
+  @IsOptional()
+  man?: Man | null;
+}
+export { Women };
+",
+  "server/src/women/base/WomenCreateInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ManWhereUniqueInput } from \\"../../man/base/ManWhereUniqueInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class WomenCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => ManWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ManWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ManWhereUniqueInput, {
+    nullable: true,
+  })
+  man?: ManWhereUniqueInput | null;
+}
+export { WomenCreateInput };
+",
+  "server/src/women/base/WomenFindManyArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { WomenWhereInput } from \\"./WomenWhereInput\\";
+import { Type } from \\"class-transformer\\";
+import { WomenOrderByInput } from \\"./WomenOrderByInput\\";
+
+@ArgsType()
+class WomenFindManyArgs {
+  @ApiProperty({
+    required: false,
+    type: () => WomenWhereInput,
+  })
+  @Field(() => WomenWhereInput, { nullable: true })
+  @Type(() => WomenWhereInput)
+  where?: WomenWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: WomenOrderByInput,
+  })
+  @Field(() => WomenOrderByInput, { nullable: true })
+  @Type(() => WomenOrderByInput)
+  orderBy?: WomenOrderByInput;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  skip?: number;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  take?: number;
+}
+
+export { WomenFindManyArgs };
+",
+  "server/src/women/base/WomenFindUniqueArgs.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+
+@ArgsType()
+class WomenFindUniqueArgs {
+  @Field(() => WomenWhereUniqueInput, { nullable: false })
+  where!: WomenWhereUniqueInput;
+}
+
+export { WomenFindUniqueArgs };
+",
+  "server/src/women/base/WomenOrderByInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class WomenOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  manId?: SortOrder;
+}
+
+export { WomenOrderByInput };
+",
+  "server/src/women/base/WomenUpdateInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ManWhereUniqueInput } from \\"../../man/base/ManWhereUniqueInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class WomenUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: () => ManWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ManWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ManWhereUniqueInput, {
+    nullable: true,
+  })
+  man?: ManWhereUniqueInput | null;
+}
+export { WomenUpdateInput };
+",
+  "server/src/women/base/WomenWhereInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, ValidateNested } from \\"class-validator\\";
+import { ManWhereUniqueInput } from \\"../../man/base/ManWhereUniqueInput\\";
+@InputType()
+class WomenWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => ManWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ManWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ManWhereUniqueInput, {
+    nullable: true,
+  })
+  man?: ManWhereUniqueInput;
+}
+export { WomenWhereInput };
+",
+  "server/src/women/base/WomenWhereUniqueInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+@InputType()
+class WomenWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+}
+export { WomenWhereUniqueInput };
+",
+  "server/src/women/base/women.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { WomenController } from \\"../women.controller\\";
+import { WomenService } from \\"../women.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Women\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: WomenService,
+          useValue: service,
+        },
+      ],
+      controllers: [WomenController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /women\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/women\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect(CREATE_RESULT);
+  });
+
+  test(\\"GET /women\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/women\\")
+      .expect(HttpStatus.OK)
+      .expect([FIND_MANY_RESULT[0]]);
+  });
+
+  test(\\"GET /women/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/women\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /women/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/women\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect(FIND_ONE_RESULT);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/women/base/women.controller.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestMorgan from \\"nest-morgan\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { WomenService } from \\"../women.service\\";
+import { WomenCreateInput } from \\"./WomenCreateInput\\";
+import { WomenWhereInput } from \\"./WomenWhereInput\\";
+import { WomenWhereUniqueInput } from \\"./WomenWhereUniqueInput\\";
+import { WomenFindManyArgs } from \\"./WomenFindManyArgs\\";
+import { WomenUpdateInput } from \\"./WomenUpdateInput\\";
+import { Women } from \\"./Women\\";
+@swagger.ApiBasicAuth()
+export class WomenControllerBase {
+  constructor(
+    protected readonly service: WomenService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Post()
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiCreatedResponse({ type: Women })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async create(
+    @common.Body() data: WomenCreateInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Women> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Women\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return await this.service.create({
+      data: {
+        ...data,
+
+        man: data.man
+          ? {
+              connect: data.man,
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+
+        man: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Get()
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: [Women] })
+  @swagger.ApiForbiddenResponse()
+  @ApiNestedQuery(WomenFindManyArgs)
+  async findMany(
+    @common.Req() request: Request,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Women[]> {
+    const args = plainToClass(WomenFindManyArgs, request.query);
+
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+
+        man: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Get(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  @swagger.ApiOkResponse({ type: Women })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async findOne(
+    @common.Param() params: WomenWhereUniqueInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Women | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Women\\",
+    });
+    const result = await this.service.findOne({
+      where: params,
+      select: {
+        id: true,
+
+        man: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Patch(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: Women })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async update(
+    @common.Param() params: WomenWhereUniqueInput,
+    @common.Body()
+    data: WomenUpdateInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Women | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Women\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      return await this.service.update({
+        where: params,
+        data: {
+          ...data,
+
+          man: data.man
+            ? {
+                connect: data.man,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+
+          man: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
+  @common.Delete(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: Women })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async delete(
+    @common.Param() params: WomenWhereUniqueInput
+  ): Promise<Women | null> {
+    try {
+      return await this.service.delete({
+        where: params,
+        select: {
+          id: true,
+
+          man: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
+  "server/src/women/base/women.module.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class WomenModuleBase {}
+",
+  "server/src/women/base/women.resolver.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { CreateWomenArgs } from \\"./CreateWomenArgs\\";
+import { UpdateWomenArgs } from \\"./UpdateWomenArgs\\";
+import { DeleteWomenArgs } from \\"./DeleteWomenArgs\\";
+import { WomenFindManyArgs } from \\"./WomenFindManyArgs\\";
+import { WomenFindUniqueArgs } from \\"./WomenFindUniqueArgs\\";
+import { Women } from \\"./Women\\";
+import { Man } from \\"../../man/base/Man\\";
+import { WomenService } from \\"../women.service\\";
+
+@graphql.Resolver(() => Women)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+export class WomenResolverBase {
+  constructor(
+    protected readonly service: WomenService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _womansMeta(
+    @graphql.Args() args: WomenFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
+
+  @graphql.Query(() => [Women])
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async womans(
+    @graphql.Args() args: WomenFindManyArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Women[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const results = await this.service.findMany(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => Women, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async women(
+    @graphql.Args() args: WomenFindUniqueArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Women | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Women\\",
+    });
+    const result = await this.service.findOne(args);
+    if (result === null) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => Women)
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async createWomen(
+    @graphql.Args() args: CreateWomenArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Women> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new apollo.ApolloError(
+        \`providing the properties: \${properties} on \${\\"Women\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        man: args.data.man
+          ? {
+              connect: args.data.man,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Women)
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateWomen(
+    @graphql.Args() args: UpdateWomenArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Women | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Women\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new apollo.ApolloError(
+        \`providing the properties: \${properties} on \${\\"Women\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          man: args.data.man
+            ? {
+                connect: args.data.man,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Women)
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async deleteWomen(
+    @graphql.Args() args: DeleteWomenArgs
+  ): Promise<Women | null> {
+    try {
+      // @ts-ignore
+      return await this.service.delete(args);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.ResolveField(() => Man, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Women\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async man(
+    @graphql.Parent() parent: Women,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Man | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Man\\",
+    });
+    const result = await this.service.getMan(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+}
+",
+  "server/src/women/base/women.service.base.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { PrismaService } from \\"nestjs-prisma\\";
+import { Prisma, Women, Man } from \\"@prisma/client\\";
+
+export class WomenServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.WomenFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WomenFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.women.count(args);
+  }
+
+  async findMany<T extends Prisma.WomenFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WomenFindManyArgs>
+  ): Promise<Women[]> {
+    return this.prisma.women.findMany(args);
+  }
+  async findOne<T extends Prisma.WomenFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WomenFindUniqueArgs>
+  ): Promise<Women | null> {
+    return this.prisma.women.findUnique(args);
+  }
+  async create<T extends Prisma.WomenCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WomenCreateArgs>
+  ): Promise<Women> {
+    return this.prisma.women.create<T>(args);
+  }
+  async update<T extends Prisma.WomenUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WomenUpdateArgs>
+  ): Promise<Women> {
+    return this.prisma.women.update<T>(args);
+  }
+  async delete<T extends Prisma.WomenDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WomenDeleteArgs>
+  ): Promise<Women> {
+    return this.prisma.women.delete(args);
+  }
+
+  async getMan(parentId: string): Promise<Man | null> {
+    return this.prisma.women
+      .findUnique({
+        where: { id: parentId },
+      })
+      .man();
+  }
+}
+",
+  "server/src/women/women.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { WomenService } from \\"./women.service\\";
+import { WomenControllerBase } from \\"./base/women.controller.base\\";
+
+@swagger.ApiTags(\\"women\\")
+@common.Controller(\\"women\\")
+export class WomenController extends WomenControllerBase {
+  constructor(
+    protected readonly service: WomenService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/women/women.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { WomenModuleBase } from \\"./base/women.module.base\\";
+import { WomenService } from \\"./women.service\\";
+import { WomenController } from \\"./women.controller\\";
+import { WomenResolver } from \\"./women.resolver\\";
+
+@Module({
+  imports: [WomenModuleBase],
+  controllers: [WomenController],
+  providers: [WomenService, WomenResolver],
+  exports: [WomenService],
+})
+export class WomenModule {}
+",
+  "server/src/women/women.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { WomenResolverBase } from \\"./base/women.resolver.base\\";
+import { Women } from \\"./base/Women\\";
+import { WomenService } from \\"./women.service\\";
+
+@graphql.Resolver(() => Women)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+export class WomenResolver extends WomenResolverBase {
+  constructor(
+    protected readonly service: WomenService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/women/women.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { WomenServiceBase } from \\"./base/women.service.base\\";
+
+@Injectable()
+export class WomenService extends WomenServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
 }
 ",
 }
