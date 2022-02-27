@@ -1,5 +1,6 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { Injectable } from '@nestjs/common';
+import { Workspace } from '@prisma/client';
 import { isEmpty } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { pascalCase } from 'pascal-case';
@@ -772,5 +773,8 @@ export class AppService {
         githubLastSync: new Date()
       }
     });
+  }
+  workspace(args: FindOneArgs): Promise<Workspace> {
+    return this.prisma.app.findFirst(args).workspace();
   }
 }

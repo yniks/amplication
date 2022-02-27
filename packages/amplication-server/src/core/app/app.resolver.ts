@@ -16,7 +16,7 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { App, Commit, Entity, User } from 'src/models';
+import { App, Commit, Entity, User, Workspace } from 'src/models';
 import { AppService, EntityService } from '../';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
@@ -206,5 +206,13 @@ export class AppResolver {
     @Args() args: FindOneArgs
   ): Promise<AppValidationResult> {
     return this.appService.validateBeforeCommit(args);
+  }
+
+  @ResolveField(() => Workspace)
+  async workspace(@Parent() parentApp: App): Promise<Workspace> {
+    const workspace = this.appService.workspace({
+      where: { id: parentApp.id }
+    });
+    return workspace;
   }
 }
