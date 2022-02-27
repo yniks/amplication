@@ -11,9 +11,14 @@ import "./SyncWithGithubPage.scss";
 const CLASS_NAME = "sync-with-github-page";
 
 export type APP_WITH_GIT_REPOSITORY_TData = {
-  app: { id: string; gitRepository: null | { id: string } };
+  app: {
+    id: string;
+    gitRepository: null | { id: string };
+    workspace: { id: string; gitOrganizations: GIT_ORGANIZATION_FOR_DISPLAY[] };
+  };
 };
 
+export type GIT_ORGANIZATION_FOR_DISPLAY = { id: string; name: string };
 type Props = {
   match: match<{ application: string }>;
 };
@@ -29,6 +34,8 @@ function SyncWithGithubPage({ match }: Props) {
       },
     }
   );
+  console.log({ data });
+
   useNavigationTabs(application, NAVIGATION_KEY, match.url, `GitHub`);
   const errorMessage = formatError(error);
 
@@ -44,7 +51,13 @@ function SyncWithGithubPage({ match }: Props) {
           your application and create a Pull Request in your GitHub repository
           every time you commit your changes.
         </div>
-        {data?.app && <AuthAppWithGithub app={data} onDone={refetch} />}
+        {data?.app && (
+          <AuthAppWithGithub
+            app={data}
+            onDone={refetch}
+            gitOrganizations={data.app.workspace.gitOrganizations}
+          />
+        )}
 
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
@@ -58,6 +71,13 @@ const GET_APP_GIT_REPOSITORY = gql`
   query getAppGitRepository($appId: String!) {
     app(where: { id: $appId }) {
       id
+      workspace {
+        id
+        gitOrganizations {
+          id
+          name
+        }
+      }
       gitRepository {
         id
         name

@@ -1,9 +1,9 @@
 import React from "react";
-import { GitOrganization } from "../../../models";
 import { githubOrgImageUrl } from "../../../util/github";
+import { GIT_ORGANIZATION_FOR_DISPLAY } from "../SyncWithGithubPage";
 
 type Props = {
-  org: GitOrganization;
+  org: GIT_ORGANIZATION_FOR_DISPLAY;
 };
 export const GitOrganizationMenuItemContent = ({ org }: Props) => {
   return (

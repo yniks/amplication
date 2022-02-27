@@ -8,14 +8,17 @@ import {
   SelectMenuModal,
 } from "@amplication/design-system";
 import React from "react";
-import { GitOrganization } from "../../../models";
+import { GIT_ORGANIZATION_FOR_DISPLAY } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
 type Props = {
-  gitOrganizations: GitOrganization[];
-  selectedGitOrganization: GitOrganization | null;
+  gitOrganizations: GIT_ORGANIZATION_FOR_DISPLAY[];
+  selectedGitOrganization: GIT_ORGANIZATION_FOR_DISPLAY | null;
   onAddGitOrganization: () => void;
-  onSelectGitOrganization: (organization: GitOrganization) => void;
+  onSelectGitOrganization: (
+    organization: GIT_ORGANIZATION_FOR_DISPLAY,
+    index: number
+  ) => void;
 };
 
 export default function ExistingConnectionsMenu({
@@ -35,12 +38,12 @@ export default function ExistingConnectionsMenu({
           <SelectMenuModal>
             <SelectMenuList>
               <>
-                {gitOrganizations.map((organization) => (
+                {gitOrganizations.map((organization, i) => (
                   <SelectMenuItem
                     selected={selectedGitOrganization?.id === organization.id}
                     key={organization.id}
                     onSelectionChange={() => {
-                      onSelectGitOrganization(organization);
+                      onSelectGitOrganization(organization, i);
                     }}
                   >
                     <GitOrganizationMenuItemContent org={organization} />
