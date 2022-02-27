@@ -27,7 +27,8 @@ export class App {
     description: undefined
   })
   updatedAt!: Date;
-
+  // not represent the prisma schema, in the prisma schema its require field
+  @Field(() => Workspace, { nullable: true })
   workspace?: Workspace;
 
   @Field(() => String, {

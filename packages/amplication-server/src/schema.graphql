@@ -78,6 +78,7 @@ type App {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  workspace: Workspace
   workspaceId: String
   gitRepository: GitRepository
   gitRepositoryId: String
