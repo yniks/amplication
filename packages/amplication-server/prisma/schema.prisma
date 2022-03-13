@@ -53,6 +53,7 @@ model GitRepository {
   updatedAt         DateTime        @updatedAt
   gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
   gitOrganizationId String
+  lastCommitSHA     String?
 }
 
 model User {

@@ -22,4 +22,7 @@ export class GitRepository {
 
   @Field(() => Date, { nullable: true })
   updatedAt?: Date;
+
+  @Field(() => String, { nullable: true })
+  lastCommitSHA?: string;
 }

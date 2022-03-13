@@ -1,6 +1,7 @@
 import { RemoteGitOrganization } from '../dto/objects/RemoteGitOrganization';
 import { RemoteGitRepository } from '../dto/objects/RemoteGitRepository';
 import { GithubFile } from '../../github/dto/githubFile';
+import { GitPullRequest } from '../dto/objects/GitPullRequest';
 export interface IGitClient {
   createUserRepository(
     installationId: string,
@@ -43,5 +44,5 @@ export interface IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string
-  ): Promise<string>;
+  ): Promise<GitPullRequest>;
 }

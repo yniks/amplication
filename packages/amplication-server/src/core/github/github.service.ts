@@ -17,6 +17,7 @@ import { RemoteGitRepository } from '../git/dto/objects/RemoteGitRepository';
 import { GithubFile } from './dto/githubFile';
 import { EnumGitOrganizationType } from '../git/dto/enums/EnumGitOrganizationType';
 import { RemoteGitOrganization } from '../git/dto/objects/RemoteGitOrganization';
+import { GitPullRequest } from '../git/dto/objects/GitPullRequest';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -213,7 +214,7 @@ export class GithubService implements IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string
-  ): Promise<string> {
+  ): Promise<GitPullRequest> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
     const token = await this.getInstallationAuthToken(installationId);
@@ -292,7 +293,7 @@ export class GithubService implements IGitClient {
         }
       ]
     });
-    return pr.data.html_url;
+    return { htmlUrl: pr.data.html_url, sha: pr.data.head.sha };
   }
 
   private async getInstallationAuthToken(

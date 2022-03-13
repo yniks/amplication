@@ -17,6 +17,8 @@ import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRep
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 import { EnumGitOrganizationType } from './dto/enums/EnumGitOrganizationType';
+import { EnumGitProvider } from './dto/enums/EnumGitProvider';
+import { GitPullRequest } from './dto/objects/GitPullRequest';
 
 @Injectable()
 export class GitService {
@@ -204,5 +206,35 @@ export class GitService {
         }
       })
     ).installationId;
+  }
+
+  public async pullRequest(
+    userName: string,
+    repoName: string,
+    modules: { path: string; code: string }[],
+    commitName: string,
+    commitMessage: string,
+    commitDescription: string,
+    baseBranchName: string,
+    installationId: string,
+    gitProvider: EnumGitProvider,
+    appId: string
+  ): Promise<GitPullRequest> {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    const pullRequest = await service.createPullRequest(
+      userName,
+      repoName,
+      modules,
+      commitName,
+      commitMessage,
+      commitDescription,
+      baseBranchName,
+      installationId
+    );
+    await this.prisma.gitRepository.update({
+      data: { lastCommitSHA: pullRequest.sha },
+      where: { appId }
+    });
+    return pullRequest;
   }
 }

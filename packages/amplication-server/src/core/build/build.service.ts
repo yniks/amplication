@@ -43,7 +43,8 @@ import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
-
+import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
+import { GitService } from '../git/git.service';
 import { GithubService } from '../github/github.service';
 
 export const HOST_VAR = 'HOST';
@@ -157,7 +158,7 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
-    private readonly githubService: GithubService,
+    private readonly gitService: GitService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     private readonly appSettingsService: AppSettingsService,
@@ -619,7 +620,7 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            const prUrl = await this.githubService.createPullRequest(
+            const { htmlUrl } = await this.gitService.pullRequest(
               appRepository.gitOrganization.name,
               appRepository.name,
               modules,
@@ -631,14 +632,18 @@ Commit message: ${commit.message}
 ${url}
 `,
               null,
-              appRepository.gitOrganization.installationId
+              appRepository.gitOrganization.installationId,
+              EnumGitProvider.Github,
+              app.id
             );
 
             await this.appService.reportSyncMessage(
               build.appId,
               'Sync Completed Successfully'
             );
-            await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
+            await this.actionService.logInfo(step, htmlUrl, {
+              githubUrl: htmlUrl
+            });
             await this.actionService.logInfo(
               step,
               PUSH_TO_GITHUB_STEP_FINISH_LOG

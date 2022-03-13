@@ -35,6 +35,9 @@ type Query {
   appSettings(where: WhereUniqueInput!): AppSettings!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   block(where: WhereUniqueInput!): Block!
+  gitOrganization(where: WhereUniqueInput!): GitOrganization!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -43,9 +46,6 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
-  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
 type Account {
@@ -98,6 +98,7 @@ type GitRepository {
   name: String!
   createdAt: DateTime
   updatedAt: DateTime
+  lastCommitSHA: String
 }
 
 type GitOrganization {
@@ -800,6 +801,23 @@ input BlockOrderByInput {
   description: SortOrder
 }
 
+type RemoteGitRepository {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitOrganizationWhereInput {
+  id: String
+}
+
 type ApiToken {
   id: String!
   createdAt: DateTime!
@@ -966,23 +984,6 @@ input EntityPageOrderByInput {
   description: SortOrder
 }
 
-type RemoteGitRepository {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-}
-
-input RemoteGitRepositoriesWhereUniqueInput {
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitOrganizationWhereInput {
-  id: String
-}
-
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1015,6 +1016,12 @@ type Mutation {
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createDeployment(data: DeploymentCreateInput!): Deployment!
   updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
+  createGitRepository(data: CreateGitRepositoryInput!): App!
+  connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
+  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteGitRepository(gitRepositoryId: String!): App!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1027,12 +1034,6 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createGitRepository(data: CreateGitRepositoryInput!): App!
-  connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
-  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
-  deleteGitRepository(gitRepositoryId: String!): App!
-  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
-  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
 }
 
 input UpdateAccountInput {
@@ -1206,6 +1207,30 @@ input AppSettingsUpdateInput {
   authProvider: EnumAuthProviderType!
 }
 
+input CreateGitRepositoryInput {
+  name: String!
+  public: Boolean!
+  appId: String!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+  appId: String!
+  gitOrganizationId: String!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  gitProvider: EnumGitProvider!
+}
+
 input SignupInput {
   email: String!
   password: String!
@@ -1318,28 +1343,4 @@ input EntityPageUpdateInput {
   listSettings: EntityPageListSettingsInput
   showAllFields: Boolean!
   showFieldList: [String!]
-}
-
-input CreateGitRepositoryInput {
-  name: String!
-  public: Boolean!
-  appId: String!
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-  gitOrganizationType: EnumGitOrganizationType!
-}
-
-input ConnectGitRepositoryInput {
-  name: String!
-  appId: String!
-  gitOrganizationId: String!
-}
-
-input GitOrganizationCreateInput {
-  installationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitGetInstallationUrlInput {
-  gitProvider: EnumGitProvider!
 }
