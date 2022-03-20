@@ -14,6 +14,15 @@ export enum EnumButtonStyle {
   Secondary = "secondary",
   CallToAction = "call-to-action",
   Clear = "clear",
+  Default = "default",
+  Text = "text",
+  Link = "link",
+}
+
+export enum EnumButtonState {
+  Default = "default",
+  Danger = "danger",
+  Disabled = "disabled",
 }
 
 type ButtonProps = {
@@ -25,6 +34,7 @@ type ButtonProps = {
   splitValue?: string;
   icon?: string;
   iconSize?: IconSize;
+  state?: EnumButtonState;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;
@@ -37,6 +47,7 @@ export const Button = ({
   children,
   icon,
   iconSize,
+  state = EnumButtonState.Default,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
@@ -51,7 +62,8 @@ export const Button = ({
         {
           "amp-button--split": isSplit,
         },
-        `amp-button--${buttonStyle}`
+        `amp-button--${buttonStyle}`,
+        `amp-button-state--${state}`
       )}
       {...rest}
     >
