@@ -30,7 +30,6 @@ $split-icon-font-size: 20px;
 
   &.amp-button--primary {
     background-color: var(--primary);
-    color: var(--static-white);
     border: $border-primary;
 
     &:hover,
@@ -42,7 +41,6 @@ $split-icon-font-size: 20px;
 
     &[disabled] {
       background-color: var(--black20);
-      color: var(--white);
       border: none;
     }
   }
@@ -69,7 +67,6 @@ $split-icon-font-size: 20px;
 
   &.amp-button--secondary {
     background-color: transparent;
-    color: var(--black100);
     border: none;
 
     &:hover,
@@ -77,11 +74,9 @@ $split-icon-font-size: 20px;
     &:focus {
       background-color: var(--black10);
       border-color: none !important;
-      color: var(--black100);
     }
 
     &[disabled] {
-      color: var(--black20);
       background-color: transparent;
       border: none;
     }
@@ -89,7 +84,6 @@ $split-icon-font-size: 20px;
 
   &.amp-button--clear {
     background-color: transparent;
-    color: var(--black100);
     border: none;
     min-width: var(--default-button-height);
     height: var(--default-button-height);
@@ -101,12 +95,10 @@ $split-icon-font-size: 20px;
     &:hover,
     &:active,
     &:focus {
-      color: var(--black80);
       background-color: transparent;
     }
 
     &[disabled] {
-      color: var(--black40);
       background-color: transparent;
       border: none;
     }
@@ -141,5 +133,11 @@ $split-icon-font-size: 20px;
         font-size: $split-icon-font-size;
       }
     }
+  }
+  &.amp-button-state--default {
+    color: var(--white);
+  }
+  &.amp-button-state--disabled {
+    color: var(--black30);
   }
 }
