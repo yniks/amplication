@@ -5,6 +5,8 @@ export {
   Button,
   EnumButtonStyle,
   Props as ButtonProps,
+  EnumButtonSize,
+  EnumButtonState,
 } from "./components/Button/Button";
 
 export {

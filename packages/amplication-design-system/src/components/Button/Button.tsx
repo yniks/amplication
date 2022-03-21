@@ -21,8 +21,14 @@ export enum EnumButtonStyle {
 
 export enum EnumButtonState {
   Default = "default",
+  Success = "success",
   Danger = "danger",
-  Disabled = "disabled",
+}
+
+export enum EnumButtonSize {
+  Large = "large",
+  Default = "default",
+  Small = "small",
 }
 
 type ButtonProps = {
@@ -35,6 +41,7 @@ type ButtonProps = {
   icon?: string;
   iconSize?: IconSize;
   state?: EnumButtonState;
+  size?: EnumButtonSize;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;
@@ -48,6 +55,7 @@ export const Button = ({
   icon,
   iconSize,
   state = EnumButtonState.Default,
+  size = EnumButtonSize.Default,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
@@ -63,7 +71,8 @@ export const Button = ({
           "amp-button--split": isSplit,
         },
         `amp-button--${buttonStyle}`,
-        `amp-button-state--${state}`
+        `amp-button-state--${state}`,
+        `amp-button--size--${size}`
       )}
       {...rest}
     >
