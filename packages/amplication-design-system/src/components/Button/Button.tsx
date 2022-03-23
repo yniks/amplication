@@ -71,7 +71,7 @@ export const Button = ({
           "amp-button--split": isSplit,
         },
         `amp-button--${buttonStyle}`,
-        `amp-button-state--${state}`,
+        `amp-button--state--${state}`,
         `amp-button--size--${size}`
       )}
       {...rest}

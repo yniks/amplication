@@ -141,10 +141,6 @@ $split-icon-font-size: 20px;
   &.amp-button--text {
     border: none;
   }
-  // text color depend on state
-  &.amp-button-state--default {
-    color: var(--static-white);
-  }
   &[disabled] {
     color: var(--black30);
   }
@@ -169,6 +165,15 @@ $split-icon-font-size: 20px;
     &:active,
     &:focus {
       background-color: #444b66;
+    }
+  }
+
+  &--state {
+    &--default {
+      color: var(--static-white);
+    }
+    &--success {
+      color: var(--positive-default);
     }
   }
 
