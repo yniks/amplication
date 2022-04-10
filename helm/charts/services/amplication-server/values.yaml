@@ -1,0 +1,75 @@
+name: amplication-server
+
+deployment:
+  replicaCount: 1
+  volume:
+    name: amplication-server-artifacts-data
+    path: /artifacts
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
+    tag: 0.0.3
+    imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 
+    target: 3000
+  protocol: TCP
+
+ingress:
+  enabled: true
+  hostname: server.amplication-dev.com
+
+config:
+  env:
+    JWT_SECRET: jwt-secret
+    GITHUB_CLIENT_ID: 9fa6ba1586a17f7d75ef
+    GITHUB_REDIRECT_URI: https://app.amplication-dev.com/github/callback
+    GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
+    GITHUB_SCOPE: user:email
+    GITHUB_SECRET_SECRET_NAME: use_local_settings
+    GITHUB_APP_PRIVATE_KEY: "-----BEGIN RSA PRIVATE KEY-----MIIEowIBAAKCAQEApTJUlqGBKXgmLCrISiSKAtD1tmbc6nMXeXJblBVLAVV1V3mN0Ue+EXpibADhjxP4XooCdukT50sw4SOlny2niGmACQHtDMg7vKoeNMpvQ13gdhM+dtUc6WZnkVLIjekX3fcSF8PQaQH4xZujc3hRgeaJAPZWaGU2fOaY8hEdEAdP82QeByazpXiJW30HwXP5IMgkKengDcVl1KCeo0vM1S8Xj5OEYRdbg0xXyAFqH/C48kf/84IUk3s8Rf/RYivaIjCxMLan2pC0gJy6ul0FuGmV/5qWgF9xmtKDt8r+krHc3gQG8qxmvGMk0sVmtLSolaOYreMRza72XIzCKClpbQIDAQABAoIBAEx5b0VIQOX0tB8wMwZ3wdgp6gXlupFidFSJhzGXZeCZMjgrkmZ2wtuOf2+mPMUippEFbLyli8xAN8GR4gM9fFgfFuGUnauUKmtdiZxAtp9GHzoqEHmskLTP7lQNMcDYTm84CI0t3hYujn7UXSeAZKMxGO10HG45pK7PhbBSEdUv/tFzHW81iz+Y8SezVeSgjDJ6fsRbREce2khk5PY/hn8D32Hfv/82oqLtl7Cl8z6faL2HhNlHMfUza2Wvg2FoHDkoLfKDOWp5y3pG6p7X0o0lDZgB5EnyPoBiGy1i3PRJobSoeX549qx/4LT5p2tFqcXV5ng5qICyGrZJw+nBb/UCgYEA1vKfCgMtqa0yCfOz8faZraiQnPvWFGwcbAqJn7zHzrE+GQGxezOOFxvJsQvvLHU3GQ4z1e/7ayukJtO+CyTESA0R7eB3nuAocgbxEzkbXBSqNnR0alk95eZo73I82IUkelZfjB/XM0GdohBxezxTE5VJwUlc2YWwx2s1p1dwcQsCgYEAxL89szzPrjbISM5lSuJu46Gs4ac/Gi1q05r+9hkyzfryUNXMfIAHbubWbUUbbkX2LCfzpBRRNqvHliq4b+uCgf9YxfC1vcGM46yF3rD8huRtk93ya3kNCaLoK2Z4tHFRbLQgQ4NVr17e8xY3F6KhJR4wvu4Nzb2A6wWnpux0imcCgYAa1dORNnBe/KaAo5JVpQnuqlrTnoVNq2mo+2/PJ4xye6JbEOENlpQowmld1zWXAVNNp35FOV7UNHCcAFd7oK14qVkRr7J/fVDPW5qBYeHOjy3o+oUGOfoGV8vGCScbiRPSyjHHlroRRiHd99uTHSbqDPtWTEhxR8WYQAREzh/VnQKBgGBwTVIaMMJ4X9wwLz5xl2FE0nUZgbjXIlHu26LN3zVQGI6+/ajZKMuXouuUwElhSbWDL83xl41wzjgxYI6bpjEKdP0xbCRDR0giPMxXfLCyL3QXishbYaSjkaIUbH4mPX9HG7l8GvgHTMlizkZrlQmYrtQn4+RBS3voHbGYnddpAoGBANGwhB7mwoaHZiA7GxHMoBk2OOh2jPKnhgCy645glOWhh3Z/YGcs3LQWJik2mPJ/NBYx8xKqy8EI501LQjyXMh4V7SstRjjBa+1beFVIA+1lj1wV5IjpW+MlHlSFz3k291v+gR6cQ8kOaYdoBoCoLkzQKzodilqo7bFMtgL9i+zr-----END RSA PRIVATE KEY-----"
+    GITHUB_APP_APP_ID: "176700"
+    SERVICE_JWT_SECRET: service-jwt-secret
+    BCRYPT_SALT_OR_ROUNDS: "10"
+    NODE_ENV: production
+    CORS_ENABLE: "1"
+    PORT: "3000"
+    HOST: http://localhost:3000
+    DEFAULT_DISK: local
+    LOCAL_DISK_ROOT: /artifacts
+    CONTAINER_BUILDER_DEFAULT: docker
+    DOCKER_HOST: tcp://docker:2375
+pvc:
+  storageLimit: 5Gi
+  storageRequest: 1Gi
+
+# Postgresql Server
+postgres:
+  install: false
+  postgresqlPassword: atGgu!Y81Uwb
+  postgresqlUsername: postgres
+  db: amplication
+  domain: amplication-useast1-prod-primary.csf5nwabym5c.us-east-1.rds.amazonaws.com
+  postgresqlPort: 5432
+  fullnameOverride: postgresql
+  postgresql:
+    image: groundnuty/k8s-wait-for:v1.3
+    imagePullPolicy: Always
+    primary:
+      podLabels: { name: "postgres" }
