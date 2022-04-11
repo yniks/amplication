@@ -1,12 +1,12 @@
 name: CI-Pipeline
 
 on:
-  workflow_dispatch
-  # push:
-  #   branches: [master]
-  # pull_request:
-  #   branches: [master]
-  #   types: [opened, reopened]
+  workflow_dispatch:
+    push:
+      branches: [feature/gals-development]
+    pull_request:
+      branches: [feature/gals-development]
+      types: [opened, reopened]
 
 jobs:       
   changes:
