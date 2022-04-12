@@ -1,3 +1,21 @@
 {{ include "base.deployment" (list . "amplication-client.deployment") -}}
 {{- define "amplication-client.deployment" -}}
+pec:
+  template:  
+    spec:
+      containers:
+        - name: '{{ .Values.name }}'
+          env: 
+            - name: REACT_APP_GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: REACT_APP_GITHUB_CLIENT_ID
+                  optional: false
+            - name: REACT_APP_AMPLITUDE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: REACT_APP_GITHUB_CLIENT_ID
+                  optional: false      
 {{- end }}

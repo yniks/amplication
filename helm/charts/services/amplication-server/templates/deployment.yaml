@@ -20,12 +20,54 @@ spec:
               name: '{{ .Values.name }}'
           {{- end }}
           env: 
+            - name: GCP
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: GCP
+                  optional: false
+            - name: GITHUB_APP_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: GITHUB_APP_CLIENT_SECRET
+                  optional: false 
+            - name: GITHUB_APP_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: GITHUB_APP_PRIVATE_KEY
+                  optional: false 
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: GITHUB_CLIENT_SECRET
+                  optional: false 
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: GOOGLE_APPLICATION_CREDENTIALS
+                  optional: false 
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: GITHUB_CLIENT_ID
+                  optional: false 
+            - name: POSTGRESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.name }}
+                  key: POSTGRESS_PASSWORD
+                  optional: false       
             - name: ENVIRONMENT
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: POSTGRESQL_URL
-              value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.postgres.postgresqlPassword}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
+              value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.secret.POSTGRESS_PASSWORD}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
           {{- if hasKey .Values "service" }}
