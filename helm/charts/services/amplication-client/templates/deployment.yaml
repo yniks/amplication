@@ -1,10 +1,17 @@
 {{ include "base.deployment" (list . "amplication-client.deployment") -}}
 {{- define "amplication-client.deployment" -}}
-pec:
+spec:
   template:  
     spec:
       containers:
         - name: '{{ .Values.name }}'
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          {{- if hasKey .Values "config" }}
+          envFrom:
+          - configMapRef:
+              name: '{{ .Values.name }}'
+          {{- end }}
           env: 
             - name: REACT_APP_GITHUB_CLIENT_ID
               valueFrom:
@@ -17,5 +24,11 @@ pec:
                 secretKeyRef:
                   name: {{ .Values.name }}
                   key: REACT_APP_GITHUB_CLIENT_ID
-                  optional: false      
+                  optional: false
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          {{- if hasKey .Values "service" }}
+          ports:
+            - containerPort: {{ .Values.service.port.target }}
+          {{- end }}      
 {{- end }}

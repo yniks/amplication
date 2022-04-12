@@ -67,7 +67,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: POSTGRESQL_URL
-              value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.secret.POSTGRESS_PASSWORD}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
+              value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.secrets.POSTGRESS_PASSWORD}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
           {{- if hasKey .Values "service" }}
