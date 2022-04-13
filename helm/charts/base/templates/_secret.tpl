@@ -5,7 +5,7 @@ type: Opaque
 metadata:
   name: '{{ .Values.name }}'
 data: 
-  {{- toYaml .Values.secret.env | nindent 2 }}
+  {{- toYaml .Values.secrets | nindent 2 }}
 {{- end }}
 {{- define "base.secret" -}}
 {{- include "base.util.merge" (append . "base.secret.tpl") -}}
