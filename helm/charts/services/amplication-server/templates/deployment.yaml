@@ -43,31 +43,17 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.name }}
                   key: GITHUB_CLIENT_SECRET
-                  optional: false 
-            - name: GOOGLE_APPLICATION_CREDENTIALS
+                  optional: false
+            - name: POSTGRESQL_URL
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.name }}
-                  key: GOOGLE_APPLICATION_CREDENTIALS
-                  optional: false 
-            - name: GITHUB_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.name }}
-                  key: GITHUB_CLIENT_ID
-                  optional: false 
-            - name: POSTGRESS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.name }}
-                  key: POSTGRESS_PASSWORD
+                  key: POSTGRESQL_URL
                   optional: false       
             - name: ENVIRONMENT
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: POSTGRESQL_URL
-              value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.secrets.POSTGRESS_PASSWORD}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
           {{- if hasKey .Values "service" }}

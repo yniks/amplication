@@ -24,4 +24,9 @@ spec:
         args: ["-c", "npm run migrate:up"]
         env:
         - name: POSTGRESQL_URL
-          value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.secrets.POSTGRESS_PASSWORD}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.name }}
+              key: POSTGRESQL_URL
+              optional: false
+       

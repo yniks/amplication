@@ -8,6 +8,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.service.certificatearn }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.service.hostname }}
   {{- end }}
   labels:
     app: '{{ .Values.name }}'
