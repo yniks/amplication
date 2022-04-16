@@ -8,6 +8,13 @@ helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
 #changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_folders=os.getenv('CHANGED_FOLDERS')
+
+print(f"root_folder: {root_folder}")
+print(f"output_file: {output_file}")
+print(f"helm_services_folder: {root_folder}")
+print(f"packages_folder: {packages_folder}")
+print(f"changed_folders: {changed_folders}")
+
 def is_service(service_list,service_name) -> bool:
   return service_name in service_list
 
