@@ -12,6 +12,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
+      service_build_list: ${{steps.build_list.outputs.service_build_list}}
       services: ${{ steps.filter-services.outputs.array }}
       all_changed_files: ${{ steps.filter.outputs.array }}
       packages: ${{ steps.resolved-packages.outputs.packages }}
@@ -29,71 +30,83 @@ jobs:
             .github/**
           files: |
             packages/**
-
-      - name: Filter array
-        id: filter
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
+      - name: create service build list
+        id: build_list
         env:
-          ARRAY: ${{ steps.changed-files.outputs.all_changed_files }}
+          CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          if [[ ! -z $ARRAY ]]
-          then 
-            echo "$ARRAY"
-            final=''
-            for string in $(echo $ARRAY | sed "s/,/ /g")
-            do
-              prefix="packages/"
-              no_prefix=${string#"$prefix"}
-              final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
-            done
-            final+=''
-            mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-            modi=${mod%?}
-            modif=[$(echo "$modi")]
-            echo $modif
-            echo "::set-output name=array::$modif"
-          else
-            final=''
-            for d in packages/*
-            do
-              prefix="packages/"
-              no_prefix=${d#"$prefix"}
-              final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
-            done
-            mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-            modi=${mod%?}
-            modif=[$(echo "$modi")]
-            echo $modif
-            echo "::set-output name=array::$modif"
-          fi
+          python scripts/get-service-build-list.py
+          service_build_list=$(cat ${{env.GITHUB_WORKSPACE}}/service_build_list.json)
+          echo "service_build_list: $service_build_list"
+          echo "::set-output name=service_build_list::$service_build_list"
+      # - name: Filter array
+      #   id: filter
+      #   env:
+      #     ARRAY: ${{ steps.changed-files.outputs.all_changed_files }}
+      #   run: |
+      #     if [[ ! -z $ARRAY ]]
+      #     then 
+      #       echo "$ARRAY"
+      #       final=''
+      #       for string in $(echo $ARRAY | sed "s/,/ /g")
+      #       do
+      #         prefix="packages/"
+      #         no_prefix=${string#"$prefix"}
+      #         final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
+      #       done
+      #       final+=''
+      #       mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+      #       modi=${mod%?}
+      #       modif=[$(echo "$modi")]
+      #       echo $modif
+      #       echo "::set-output name=array::$modif"
+      #     else
+      #       final=''
+      #       for d in packages/*
+      #       do
+      #         prefix="packages/"
+      #         no_prefix=${d#"$prefix"}
+      #         final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
+      #       done
+      #       mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+      #       modi=${mod%?}
+      #       modif=[$(echo "$modi")]
+      #       echo $modif
+      #       echo "::set-output name=array::$modif"
+      #     fi
 
-      - name: Filter services from array
-        id: filter-services
-        env:
-          ARRAY: ${{ steps.filter.outputs.array }}
-        run: |
-            services=['"amplication-client", "amplication-server"']
-            echo "$services"
-            echo "::set-output name=array::$services"
+      # - name: Filter services from array
+      #   id: filter-services
+      #   env:
+      #     ARRAY: ${{ steps.filter.outputs.array }}
+      #   run: |
+      #       services=['"amplication-client", "amplication-server"']
+      #       echo "$services"
+      #       echo "::set-output name=array::$services"
 
-      - name: Resolve changed packages
-        id: resolved-packages
-        run: |
-          echo ::set-output name=packages::$( \
+      # - name: Resolve changed packages
+      #   id: resolved-packages
+      #   run: |
+      #     echo ::set-output name=packages::$( \
 
-          # Git Diff - Get all changed files
-          git diff --name-only origin/master -- 'packages/**' |
+      #     # Git Diff - Get all changed files
+      #     git diff --name-only origin/master -- 'packages/**' |
 
-          # Extract package names from files path
-          grep -Po 'packages/\K[^/]*' |
+      #     # Extract package names from files path
+      #     grep -Po 'packages/\K[^/]*' |
 
-          # Dupplication
-          sort -t: -u -k1,1 |
+      #     # Dupplication
+      #     sort -t: -u -k1,1 |
 
-          # Format, Example: amplication-cli => package:@amplication/cli:path:amplication-cli
-          sed -e "s/amplication-\(.*\)/package:@amplication\/\1:path:packages\/amplication-\1/" |
+      #     # Format, Example: amplication-cli => package:@amplication/cli:path:amplication-cli
+      #     sed -e "s/amplication-\(.*\)/package:@amplication\/\1:path:packages\/amplication-\1/" |
 
-          # Create array of objects, => [{"package": "@amplication/cli", "path": "amplication-cli"}]
-          jq -Rs 'split("\n")|map(split(":")|{(.[0]):.[1],(.[2]):.[3]}?)')
+      #     # Create array of objects, => [{"package": "@amplication/cli", "path": "amplication-cli"}]
+      #     jq -Rs 'split("\n")|map(split(":")|{(.[0]):.[1],(.[2]):.[3]}?)')
 
       - name: download folder if service not changed 
         run: |
