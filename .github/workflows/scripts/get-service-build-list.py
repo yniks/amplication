@@ -12,7 +12,8 @@ changed_folders=[]
 changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 print(f"root_folder: {root_folder}")
-print(f"output_file: {output_file}")
+print(f"services_output_file: {services_output_file}")
+print(f"packages_output_file: {packages_output_file}")
 print(f"helm_services_folder: {helm_services_folder}")
 print(f"packages_folder: {packages_folder}")
 print(f"changed_files: {changed_files}")
