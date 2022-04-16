@@ -1,7 +1,7 @@
 {
   "name": "@amplication/data",
   "version": "0.12.3",
-  "private": true,
+  "private": true, 
   "main": "dist/index.js",
   "scripts": {
     "build": "run-s build:generate-types build:compile",

@@ -1,7 +1,7 @@
 {
   "name": "@amplication/deployer",
   "version": "0.12.3",
-  "description": "",
+  "description": "", 
   "main": "dist/index.js",
   "scripts": {
     "build": "run-s build:compile build:copy-files",
