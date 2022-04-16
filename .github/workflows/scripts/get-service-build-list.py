@@ -35,7 +35,7 @@ def get_changed_folders():
     if not changed_files:
         print('no changed files')
     else:
-        for changed_file in changed_files:
+        for changed_file in changed_files.split(','):
             print(f"changed_file: {changed_file}")
             changed_folders.append(changed_file.split('/')[1])
     print(f"changed_folders: {changed_folders}")
