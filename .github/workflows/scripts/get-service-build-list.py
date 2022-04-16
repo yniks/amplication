@@ -8,7 +8,7 @@ helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
 #changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_folders=[]
-changed_files=os.getenv('CHANGED_FILES')
+changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 print(f"root_folder: {root_folder}")
 print(f"output_file: {output_file}")
