@@ -43,7 +43,7 @@ def get_changed_folders():
 
 service_build_list=[]
 get_changed_folders()
-all_services=next(os.walk(helm_services_folder))[1]
+all_services=os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
     if is_service(all_services,changed_folder):
         if changed_folder not in service_build_list:
