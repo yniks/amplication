@@ -12,10 +12,9 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      service_build_list: ${{steps.build_list.outputs.service_build_list}}
       services: ${{steps.build_list.outputs.service_build_list}}
+      packages: ${{ steps.resolved-packages.outputs.package_build_list }}
       all_changed_files: ${{ steps.filter.outputs.array }}
-      packages: ${{ steps.resolved-packages.outputs.packages }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -58,7 +57,10 @@ jobs:
           python .github/workflows/scripts/get-service-build-list.py
           service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json)
           echo "service_build_list: $service_build_list"
+          package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
           echo "::set-output name=service_build_list::$service_build_list"
+          echo "package_build_list: $package_build_list"
+          echo "::set-output name=package_build_list::$package_build_list"
       # - name: Filter array
       #   id: filter
       #   env:
