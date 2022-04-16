@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
       - name: get changed files (not pr)
         if: github.event_name != 'pull_request'
-        id: changed-files
+        id: changed-files-not-pr
         run: |
           changed_files=$(git diff --name-only `git merge-base origin/master HEAD`)
           while IFS= read -r changed_file ; do 
@@ -33,7 +33,8 @@ jobs:
           echo "all_changed_files: $all_changed_files"
           echo "::set-output name=all_changed_files::$diff"
       - name: get changed files (pr)
-        id: changed-files
+        id: changed-files-pr
+        if: github.event_name != 'pull_request'
         uses: tj-actions/changed-files@v17.3
         with:
           separator: ","
@@ -48,7 +49,8 @@ jobs:
       - name: create service build list
         id: build_list
         env:
-          CHANGED_FILES: ${{ steps.changed-files.outputs.all }}
+          CHANGED_FILES_PR: ${{ steps.changed-files-pr.outputs.all }}
+          CHANGED_FILES_NOT_PR: ${{ steps.changed-files-not-pr.outputs.all }}
         run: |
           pwd
           ls
