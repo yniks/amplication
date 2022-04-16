@@ -54,7 +54,7 @@ jobs:
           CHANGED_FILES_PR: ${{ steps.changed-files-pr.outputs.all_changed_files }}
           CHANGED_FILES_NOT_PR: ${{ steps.changed-files-not-pr.outputs.all_changed_files }}
         run: |
-          cd helm/charts
+          cd helm
           pwd
           ls
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
