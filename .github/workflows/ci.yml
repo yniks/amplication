@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       service_build_list: ${{steps.build_list.outputs.service_build_list}}
-      services: ${{ steps.filter-services.outputs.array }}
+      services: ${{steps.build_list.outputs.service_build_list}}
       all_changed_files: ${{ steps.filter.outputs.array }}
       packages: ${{ steps.resolved-packages.outputs.packages }}
     steps:
