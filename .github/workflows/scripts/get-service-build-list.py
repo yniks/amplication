@@ -14,7 +14,7 @@ print(f"root_folder: {root_folder}")
 print(f"output_file: {output_file}")
 print(f"helm_services_folder: {helm_services_folder}")
 print(f"packages_folder: {packages_folder}")
-print(f"changed_folders: {changed_folders}")
+print(f"changed_files: {changed_files}")
 
 def is_service(service_list,service_name) -> bool:
   return service_name in service_list

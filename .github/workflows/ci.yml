@@ -40,6 +40,8 @@ jobs:
           CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           pwd
+          ls
+          echo "GITHUB_WORKSPACE: ${{env.GITHUB_WORKSPACE}}"
           python .github/workflows/scripts/get-service-build-list.py
           service_build_list=$(cat ${{env.GITHUB_WORKSPACE}}/service_build_list.json)
           echo "service_build_list: $service_build_list"
