@@ -36,6 +36,7 @@ def get_changed_folders():
     else:
         changed_folders=[]
         for changed_file in changed_files:
+            print(f"changed_file: {changed_file}")
             changed_folders.append(changed_file.split('/')[1])
     print(f"changed_folders: {changed_folders}")
     return changed_folders
