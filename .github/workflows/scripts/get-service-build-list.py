@@ -61,9 +61,9 @@ for changed_folder in changed_folders:
 
 print(f"Will build the follwoing services: {service_build_list}")
 with open(services_output_file, 'w') as outfile:
-    service_build_list_fixed = json.dumps(service_build_list).replace(' ','')
+    service_build_list_fixed = json.dumps(service_build_list).replace('[','[\'').replace(']','\']')
     json.dump(service_build_list_fixed, outfile)
 print(f"Will build the follwoing pcakges: {package_build_list}")
 with open(packages_output_file, 'w') as outfile:
-    package_build_list_fixed = json.dumps(package_build_list).replace(' ','')
+    package_build_list_fixed = json.dumps(package_build_list).replace('[','[\'').replace(']','\']')
     json.dump(package_build_list_fixed, outfile)
