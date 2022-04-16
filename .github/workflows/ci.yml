@@ -27,14 +27,14 @@ jobs:
           changed_files=$(git diff --name-only `git merge-base origin/master HEAD`)
           while IFS= read -r changed_file ; do 
             echo "changed_file: $changed_file"
-            all_changed_files=all_changed_files+",$changed_file"
+            all_changed_files=$all_changed_files+",$changed_file"
           done <<< "$changed_files"
           all_changed_files="${all_changed_files:1}"
           echo "all_changed_files: $all_changed_files"
           echo "::set-output name=all_changed_files::$diff"
       - name: get changed files (pr)
         id: changed-files-pr
-        if: github.event_name != 'pull_request'
+        if: github.event_name = 'pull_request'
         uses: tj-actions/changed-files@v17.3
         with:
           separator: ","
