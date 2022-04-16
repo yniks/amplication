@@ -37,7 +37,7 @@ jobs:
       - name: create service build list
         id: build_list
         env:
-          CHANGED_FOLDERS: ${{ steps.changed-files.outputs.all_changed_files }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           pwd
           ls

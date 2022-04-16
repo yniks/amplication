@@ -8,7 +8,6 @@ helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
 #changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files=os.getenv('CHANGED_FILES')
-changed_folders=os.getenv('CHANGED_FILES')
 
 print(f"root_folder: {root_folder}")
 print(f"output_file: {output_file}")
@@ -32,10 +31,14 @@ def dependet_services(package_name) -> List[str]:
     return services
 
 def get_changed_folders():
-    changed_folders=[]
-    for changed_file in changed_files:
-        changed_folders.append(changed_file.split('/')[1])
+    if not changed_files:
+        print('no changed files')
+    else:
+        changed_folders=[]
+        for changed_file in changed_files:
+            changed_folders.append(changed_file.split('/')[1])
     print(f"changed_folders: {changed_folders}")
+    return changed_folders
 
 service_build_list=[]
 all_services=next(os.walk(helm_services_folder))[1]
