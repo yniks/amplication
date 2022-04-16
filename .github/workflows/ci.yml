@@ -2,8 +2,8 @@ name: CI
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [master]
+  push:
+    branches: [ci-v3]
   # pull_request:
   #   branches: [master]
   #   types: [opened, reopened]
@@ -23,8 +23,6 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: jitterbit/get-changed-files@v1
-        with:
-          format: json
       # - name: Get changed files
       #   id: changed-files
       #   uses: tj-actions/changed-files@v17.3
