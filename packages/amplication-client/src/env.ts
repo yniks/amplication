@@ -4,7 +4,7 @@
  */
 
 function get(name: string): string | undefined {
-  // @ts-ignore
+  // @ts-ignore 
   return window[name] || process.env[name];
 }
 
