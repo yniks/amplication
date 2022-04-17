@@ -59,8 +59,11 @@ jobs:
           echo "service_build_list: $service_build_list"
           echo "::set-output name=service_build_list::$service_build_list"
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
-          echo "package_build_list: $package_build_list"
-          echo "::set-output name=package_build_list::["amplication-data", "amplication-deployer"]
+          mod=$(echo $package_build_list | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+          modi=${mod%?}
+          modif=[$(echo "$modi")]
+          echo "package_build_list: $modif"
+          echo "::set-output name=package_build_list::$modif"
       # - name: Filter array
       #   id: filter
       #   env:
