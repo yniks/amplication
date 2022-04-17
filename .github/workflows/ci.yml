@@ -60,8 +60,8 @@ jobs:
           echo "::set-output name=service_build_list::$service_build_list"
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
           mod=$(echo $package_build_list | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-          echo "package_build_list: $modif"
-          echo "::set-output name=package_build_list::$modif"
+          echo "package_build_list: $mod"
+          echo "::set-output name=package_build_list::$mod"
       # - name: Filter array
       #   id: filter
       #   env:
