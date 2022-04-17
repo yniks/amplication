@@ -57,8 +57,8 @@ jobs:
           python .github/workflows/scripts/get-service-build-list.py
           service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json)
           echo "service_build_list: $service_build_list"
-          package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
           echo "::set-output name=service_build_list::$service_build_list"
+          package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
           echo "package_build_list: $package_build_list"
           echo "::set-output name=package_build_list::$package_build_list"
       # - name: Filter array
@@ -211,7 +211,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        package: ${{ fromJson(needs.changes.outputs.package_build_list) }}
+        package: ${{ fromJson(needs.changes.outputs.packages) }}
         node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
