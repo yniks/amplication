@@ -55,7 +55,7 @@ jobs:
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           python .github/workflows/scripts/get-service-build-list.py
-          service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json)
+          service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json | jq -r .)
           echo "service_build_list: $service_build_list"
           echo "::set-output name=service_build_list::$service_build_list"
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json | jq -r .)
@@ -211,7 +211,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        package: ${{ fromJson(needs.changes.outputs.packages) }} #['"amplication-data", "amplication-deployer"'] #${{ fromJson(needs.changes.outputs.packages) }}
+        package: ${{ fromJson(needs.changes.outputs.packages) }}
         node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
@@ -385,19 +385,18 @@ jobs:
           GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }}/Dockerfile | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
        
-      - name: Check if repo exist
+      - name: Create if repo doesn't exists
         working-directory: packages/${{ matrix.service }}
         env: 
           ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
+          REPO_NAME=$ECR_REPOSITORY_PROD
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
-            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_STAGING || aws ecr create-repository --repository-name $ECR_REPOSITORY_STAGING
-          else
-            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_PROD || aws ecr create-repository --repository-name $ECR_REPOSITORY_PROD
+            REPO_NAME=$ECR_REPOSITORY_STAGING
           fi
-
+          aws ecr describe-repositories --repository-names $REPO_NAME || aws ecr create-repository --repository-name $REPO_NAME
       - name: Check if tag already exist
         id: tag-exist
         env: 
@@ -405,12 +404,13 @@ jobs:
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
           set +e
+          REPO_NAME=$ECR_REPOSITORY_PROD
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_STAGING --image-ids=imageTag=$GITHUB_HASH)"
-          else
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_PROD --image-ids=imageTag=$GITHUB_HASH)"
+            REPO_NAME=$ECR_REPOSITORY_STAGING
           fi
+          if [[ $GITHUB_REF != 'refs/heads/master' ]]
+          cmd="$(aws ecr describe-images --repository-name=$REPO_NAME --image-ids=imageTag=$GITHUB_HASH)"
           if [[ ! -z "$cmd" ]]
           then  
             echo "tag already exist"
@@ -426,7 +426,6 @@ jobs:
           then 
             echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
           fi
-
       - name: Build, tag, and push image to Amazon ECR
         if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
