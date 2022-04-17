@@ -60,7 +60,7 @@ jobs:
           echo "::set-output name=service_build_list::$service_build_list"
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
           echo "package_build_list: $package_build_list"
-          echo "::set-output name=package_build_list::$package_build_list"
+          echo "::set-output name=package_build_list::["amplication-data", "amplication-deployer"]
       # - name: Filter array
       #   id: filter
       #   env:
