@@ -2,18 +2,18 @@ import os
 import json
 from pathlib import Path
 from typing import List
+
 root_folder=os.getenv('GITHUB_WORKSPACE',Path(__file__).parents[3])
-services_output_file=os.getenv('SERVICES_OUPTUT_PATH',os.path.join(root_folder,'service_build_list.json'))
-packages_output_file=os.getenv('PACKAGES_OUPTUT_PATH',os.path.join(root_folder,'package_build_list.json'))
+output_file=os.getenv('OUPTUT_PATH',os.path.join(root_folder,'build_list.json'))
 helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'helm/charts/services'))
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
+changed_services=os.getenv('GET_SERVICE_LIST',False)
 #changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_folders=[]
 changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 print(f"root_folder: {root_folder}")
-print(f"services_output_file: {services_output_file}")
-print(f"packages_output_file: {packages_output_file}")
+print(f"output_file: {output_file}")
 print(f"helm_services_folder: {helm_services_folder}")
 print(f"packages_folder: {packages_folder}")
 print(f"changed_files: {changed_files}")
@@ -43,27 +43,20 @@ def get_changed_folders():
     print(f"changed_folders: {changed_folders}")
     return changed_folders
 
-package_build_list=[]
-service_build_list=[]
+build_list=[]
 get_changed_folders()
 all_services=os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
-    if is_service(all_services,changed_folder):
-        if changed_folder not in service_build_list:
-            service_build_list.append(changed_folder)
+    if is_service(all_services,changed_folder) and changed_services:
+        if changed_folder not in build_list:
+            build_list.append(changed_folder)
     else:
-        package_build_list.append(changed_folder)
-        services=dependet_services(changed_folder)
-        for service in services:
-            if service not in service_build_list:
-                service_build_list.append(service)
+        if not changed_services and not is_service(all_services,changed_folder):
+            build_list.append(changed_folder)
+        else:
+            services=dependet_services(changed_folder)
+            for service in services:
+                if service not in build_list:
+                    build_list.append(service)
+print(json.dumps(build_list))
 
-
-print(f"Will build the follwoing services: {service_build_list}")
-with open(services_output_file, 'w') as outfile:
-    service_build_list_fixed = json.dumps(service_build_list).replace('[','[\'').replace(']','\']')
-    json.dump(service_build_list_fixed, outfile)
-print(f"Will build the follwoing pcakges: {package_build_list}")
-with open(packages_output_file, 'w') as outfile:
-    package_build_list_fixed = json.dumps(package_build_list).replace('[','[\'').replace(']','\']')
-    json.dump(package_build_list_fixed, outfile)

@@ -54,10 +54,11 @@ jobs:
           CHANGED_FILES_NOT_PR: ${{ steps.changed-files-not-pr.outputs.all_changed_files }}
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-          python .github/workflows/scripts/get-service-build-list.py
-          service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json)
+          export GET_SERVICE_LIST=True
+          service_build_list=$(python .github/workflows/scripts/get-service-build-list.py)
           echo "service_build_list: $service_build_list"
-          package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json)
+          export GET_SERVICE_LIST=False
+          package_build_list=$(python .github/workflows/scripts/get-service-build-list.py)
           echo "::set-output name=service_build_list::$service_build_list"
           echo "package_build_list: $package_build_list"
           echo "::set-output name=package_build_list::$package_build_list"
