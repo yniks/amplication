@@ -64,6 +64,6 @@ with open(services_output_file, 'w') as outfile:
     service_build_list_fixed = json.dumps(service_build_list)
     json.dump(service_build_list_fixed.replace("[","['").replace("]","']"), outfile)
 print(f"Will build the follwoing pcakges: {package_build_list}")
-with open(packages_output_file, 'w') as outfile:
+with open(packages_output_file, 'w', encoding='utf-8') as outfile:
     package_build_list_fixed = json.dumps(package_build_list)
-    json.dump(package_build_list_fixed.replace("[","['").replace("]","']"), outfile)
+    json.dump(package_build_list_fixed, outfile, ensure_ascii=False, indent=4)
