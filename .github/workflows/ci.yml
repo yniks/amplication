@@ -211,7 +211,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        package: ${{ fromJson(needs.changes.outputs.packages) }}
+        package: ${{ fromJson(needs.changes.outputs.package_build_list) }}
         node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
