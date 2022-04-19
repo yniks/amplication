@@ -57,6 +57,7 @@ for changed_folder in changed_folders:
         for service in services:
             if service not in service_build_list:
                 service_build_list.append(service)
+package_build_list+=service_build_list
 
 
 print(f"Will build the follwoing services: {service_build_list}")
