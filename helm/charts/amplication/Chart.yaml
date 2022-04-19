@@ -3,10 +3,17 @@ name: amplication
 description: A Helm chart for Amplication.
 
 dependencies:
-
+- name: postgresql
+  alias: postgres
+  version: "10.5.2"
+  repository: "https://charts.bitnami.com/bitnami"
+  condition: postgres.install
 - name: amplication-client
   version: "0.1.0"
   repository: "file://../services/amplication-client"
+- name: base
+  version: "0.1.0"
+  repository: "file://../base"  
 - name: amplication-server
   version: "0.1.0"
   repository: "file://../services/amplication-server"
