@@ -12,8 +12,8 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      services: ${{ steps.resolved-packages.outputs.service_build_list }}
-      packages: ${{ steps.resolved-packages.outputs.package_build_list }}
+      services: ${{ steps.build_list.outputs.service_build_list }}
+      packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
       - uses: actions/checkout@v2
         with:
