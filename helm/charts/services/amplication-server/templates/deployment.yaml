@@ -23,31 +23,31 @@ spec:
             - name: GCP
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.name }}
+                  name: secrets
                   key: GCP
                   optional: false
             - name: GITHUB_APP_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.name }}
+                  name: secrets
                   key: GITHUB_APP_CLIENT_SECRET
                   optional: false 
             - name: GITHUB_APP_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.name }}
+                  name: secrets
                   key: GITHUB_APP_PRIVATE_KEY
                   optional: false 
             - name: GITHUB_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.name }}
+                  name: secrets
                   key: GITHUB_CLIENT_SECRET
                   optional: false
             - name: POSTGRESQL_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.name }}
+                  name: secrets
                   key: POSTGRESQL_URL
                   optional: false       
             - name: ENVIRONMENT
@@ -68,12 +68,6 @@ spec:
               mountPath: "/var/gcp-secret"
               readOnly: true  
       volumes:
-        - name: gcp-secret
-          secret:
-            secretName: gcp-secret
-            items:
-            - key: gcp-secret
-              path: gcp-secret
         - name: {{ .Values.deployment.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.deployment.volume.name }}

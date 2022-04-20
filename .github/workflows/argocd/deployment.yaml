@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amplication-opensource-staging
+spec:
+  destination:
+    name: ''
+    namespace: NAMESPACE
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: helm/charts/amplication
+    repoURL: 'https://github.com/amplication/amplication.git'
+    targetRevision: BRANCH_NAME
+    helm:
+      values: ''
+  project: default
+  syncPolicy:
+    automated: null
+    syncOptions:
+      - CreateNamespace=true
