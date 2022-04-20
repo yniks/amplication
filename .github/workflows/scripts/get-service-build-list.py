@@ -8,7 +8,7 @@ packages_output_file=os.getenv('PACKAGES_OUPTUT_PATH',os.path.join(root_folder,'
 helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'helm/charts/services'))
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
 changed_folders=[]
-changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
+#changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 print(f"root_folder: {root_folder}")
@@ -67,7 +67,7 @@ for changed_folder in changed_folders:
 print(f"Will build the follwoing services: {service_build_list}")
 with open(services_output_file, 'w') as outfile:
     service_build_list_fixed = json.dumps(service_build_list)
-    json.dump(service_build_list_fixed.replace("[","['").replace("]","']"), outfile)
+    json.dump(service_build_list_fixed, outfile)
 print(f"Will build the follwoing pcakges: {package_build_list}")
 with open(packages_output_file, 'w', encoding='utf-8') as outfile:
     package_build_list_fixed = json.dumps(package_build_list)
