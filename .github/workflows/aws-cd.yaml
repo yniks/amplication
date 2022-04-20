@@ -1,6 +1,3 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: AWS-CD
 
 on:
@@ -9,7 +6,7 @@ on:
       destination_environment:
         description: 'Name of the namespace to create'     
         required: true
-        default: 'staging-os'
+        default: 'staging_os'
       source_branch_name:
         description: 'Name of the branch to use'     
         required: true
@@ -18,12 +15,42 @@ on:
         description: 'Cluster name'     
         required: true
         default: 'amplication-useast1-prod-eks'
-jobs:
-  build:
+      cluster_region:
+        description: 'Cluster region'     
+        required: true
+        default: 'us-east-1'
+jobs:       
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    outputs:
+      services: ${{ steps.build_list.outputs.service_build_list }}
+      packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch master
-        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
-      
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-region: us-east-1
+      - name: connect to k8s
+        id: create_kubeconfig_file
+        run: |
+          aws eks update-kubeconfig --region ${{cluster_region}} --name ${{cluster_name}}
+      - name: deploy env secrets
+        id: deploy_env_secrets
+        run: |
+          sed -i "s|STAGING_OS_GITHUB_CLIENT_SECRET|${{ secrets.STAGING_OS_GITHUB_CLIENT_SECRET }}|g" .github/workflows/argocd/secrets.yaml
+          sed -i "s|STAGING_OS_GITHUB_APP_PRIVATE_KEY|${{ secrets.STAGING_OS_GITHUB_APP_PRIVATE_KEY }}|g" .github/workflows/argocd/secrets.yaml
+          sed -i "s|STAGING_OS_GITHUB_CLIENT_SECRET|${{ secrets.STAGING_OS_GITHUB_CLIENT_SECRET }}|g" .github/workflows/argocd/secrets.yaml
+          sed -i "s|STAGING_OS_GITHUB_APP_CLIENT_SECRET|${{ secrets.STAGING_OS_GITHUB_APP_CLIENT_SECRET }}|g" .github/workflows/argocd/secrets.yaml
+          sed -i "s|STAGING_OS_GCP|${{ secrets.STAGING_OS_GCP }}|g" .github/workflows/argocd/secrets.yaml
+          kubectl apply -f .github/workflows/argocd/secrets.yaml -n ${{destination_environment}}
+      - name: deploy amplication
+        id: deploy_amplication
+        run: |
+          sed -i "s|NAMESPACE|${{destination_environment}}|g" .github/workflows/argocd/deployment.yaml
+          sed -i "s|BRANCH_NAME|${{source_branch_name}}|g" .github/workflows/argocd/deployment.yaml
+          kubectl apply -f .github/workflows/argocd/deployment.yaml -n ${{destination_environment}}
