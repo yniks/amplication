@@ -45,6 +45,7 @@ def get_changed_folders():
 
 def get_package_name(raw_package) -> str:
     fixed_package = f"@{raw_package.replace('-','/')}"
+    print(f"package name was fixed from {raw_package} to {fixed_package}")
     return fixed_package
 
 package_build_list=[]
@@ -61,7 +62,7 @@ for changed_folder in changed_folders:
         for service in services:
             if service not in service_build_list:
                 service_build_list.append(service)
-package_build_list+=service_build_list
+                package_build_list.append(get_package_name(service))
 
 
 print(f"Will build the follwoing services: {service_build_list}")
