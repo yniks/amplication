@@ -7,8 +7,8 @@ services_output_file=os.getenv('SERVICES_OUPTUT_PATH',os.path.join(root_folder,'
 packages_output_file=os.getenv('PACKAGES_OUPTUT_PATH',os.path.join(root_folder,'package_build_list.json'))
 helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'helm/charts/services'))
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
-#changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_folders=[]
+changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 print(f"root_folder: {root_folder}")
@@ -38,7 +38,6 @@ def get_changed_folders():
         print('no changed files')
     else:
         for changed_file in changed_files.split(','):
-            print(f"changed_file: {changed_file}")
             changed_folders.append(changed_file.split('/')[1])
     print(f"changed_folders: {changed_folders}")
     return changed_folders
