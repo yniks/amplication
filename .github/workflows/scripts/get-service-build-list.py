@@ -43,7 +43,7 @@ def get_changed_folders():
     return changed_folders
 
 def get_package_name(raw_package) -> str:
-    fixed_package = f"@{raw_package.replace('-','/')}"
+    fixed_package = f"@{raw_package.replace('-','/',1)}"
     print(f"package name was fixed from {raw_package} to {fixed_package}")
     return fixed_package
 
