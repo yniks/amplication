@@ -55,6 +55,7 @@ for changed_folder in changed_folders:
     if is_service(all_services,changed_folder):
         if changed_folder not in service_build_list:
             service_build_list.append(changed_folder)
+            package_build_list.append(get_package_name(changed_folder))
     else:
         package_build_list.append(get_package_name(changed_folder))
         services=dependet_services(changed_folder)
