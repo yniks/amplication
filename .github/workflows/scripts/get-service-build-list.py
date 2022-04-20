@@ -43,6 +43,10 @@ def get_changed_folders():
     print(f"changed_folders: {changed_folders}")
     return changed_folders
 
+def get_package_name(raw_package) -> str:
+    fixed_package = f"@{raw_package.replace('-','/')}"
+    return fixed_package
+
 package_build_list=[]
 service_build_list=[]
 get_changed_folders()
@@ -52,7 +56,7 @@ for changed_folder in changed_folders:
         if changed_folder not in service_build_list:
             service_build_list.append(changed_folder)
     else:
-        package_build_list.append(changed_folder)
+        package_build_list.append(get_package_name(changed_folder))
         services=dependet_services(changed_folder)
         for service in services:
             if service not in service_build_list:
