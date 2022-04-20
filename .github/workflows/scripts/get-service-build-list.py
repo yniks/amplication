@@ -55,14 +55,14 @@ for changed_folder in changed_folders:
     if is_service(all_services,changed_folder):
         if changed_folder not in service_build_list:
             service_build_list.append(changed_folder)
-            package_build_list.append(get_package_name(changed_folder))
     else:
-        package_build_list.append(get_package_name(changed_folder))
         services=dependet_services(changed_folder)
         for service in services:
             if service not in service_build_list:
                 service_build_list.append(service)
                 package_build_list.append(get_package_name(service))
+    if get_package_name(changed_folder) not in package_build_list:
+        package_build_list.append(get_package_name(changed_folder))
 
 
 print(f"Will build the follwoing services: {service_build_list}")
