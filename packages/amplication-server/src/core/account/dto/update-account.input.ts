@@ -5,5 +5,5 @@ export class UpdateAccountInput {
   @Field({ nullable: true })
   firstName?: string;
   @Field({ nullable: true })
-  lastName?: string;
+  lastName?: string; #Comment
 }
