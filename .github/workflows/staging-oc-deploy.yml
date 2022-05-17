@@ -21,15 +21,15 @@ jobs:
           username: _json_key
           password: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      - name: "Build and push amplication/amplication Docker image"
-        uses: docker/build-push-action@v2
-        with:
-          pull: true
-          push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          tags: |
-            gcr.io/amplication-staging-oc/amplication:${{ github.sha }}
+#      - name: "Build and push amplication/amplication Docker image"
+#        uses: docker/build-push-action@v2
+#        with:
+#          pull: true
+#          push: true
+#          cache-from: type=local,src=/tmp/.buildx-cache
+#          cache-to: type=local,dest=/tmp/.buildx-cache
+#          tags: |
+#            gcr.io/amplication-staging-oc/amplication:${{ github.sha }}
 
       - uses: hashicorp/setup-terraform@v1
 
@@ -41,7 +41,7 @@ jobs:
       - run: terraform apply -auto-approve -lock-timeout=1200s
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          TF_VAR_image_id: gcr.io/amplication-staging-oc/amplication:${{ github.sha }}
+          TF_VAR_image_id: gcr.io/amplication-staging-oc/amplication@sha256:a9b38a77a91a9f2f800116a41b2a4387720719ec0f242f54013bbaa668d1af89
           TF_VAR_github_app_private_key: ${{ secrets.STAGING_GITHUB_APP_PRIVATE_KEY }}
           TF_VAR_github_app_client_secret: ${{ secrets.STAGING_GITHUB_APP_CLIENT_SECRET }}
           TF_VAR_db_url: ${{ secrets.AWS_PROD_POSTGRESQL_URL_PLAINTEXT }}
@@ -57,5 +57,5 @@ jobs:
           docker run \
             --network host \
             --env POSTGRESQL_URL="${{ secrets.AWS_PROD_POSTGRESQL_URL_PLAINTEXT }}/amplication" \
-            gcr.io/amplication-staging-oc/amplication:${{ github.sha }} \
+            gcr.io/amplication-staging-oc/amplication@sha256:a9b38a77a91a9f2f800116a41b2a4387720719ec0f242f54013bbaa668d1af89 \
             npm run migrate:up
