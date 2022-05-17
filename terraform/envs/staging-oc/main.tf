@@ -51,4 +51,5 @@ module "env" {
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
+  db_url                           = var.db_url
 }

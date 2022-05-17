@@ -1,3 +1,9 @@
+variable "db_url" {
+  type = string
+}
+
+
+
 # Google
 
 variable "project" {
