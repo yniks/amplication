@@ -31,7 +31,6 @@ model Workspace {
   invitations      Invitation[]
   subscriptions    Subscription[]
   gitOrganizations GitOrganization[]
-  users            User[]
 }
 
 model GitOrganization {
