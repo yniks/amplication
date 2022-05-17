@@ -51,6 +51,7 @@ module "env" {
   apps_domain                      = var.apps_domain
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
+  db_url                           = var.db_url
 }
 
 module "deploy" {

@@ -40,6 +40,10 @@ variable "github_app_private_key" {
   type = string
 }
 
+variable "db_url" {
+  type = string
+}
+
 variable "github_app_client_secret" {
   type = string
 }

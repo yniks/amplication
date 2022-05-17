@@ -42,6 +42,7 @@ jobs:
           TF_VAR_image_id: gcr.io/${{ github.event.inputs.image-id }}
           TF_VAR_github_app_private_key: ${{ secrets.PRODUCTION_GITHUB_APP_PRIVATE_KEY }}
           TF_VAR_github_app_client_secret: ${{ secrets.PRODUCTION_GITHUB_APP_CLIENT_SECRET }}
+          TF_VAR_db_url: ${{ secrets.AWS_PROD_POSTGRESQL_URL_PLAINTEXT }}
         working-directory: terraform/envs/production
       - uses: mattes/gce-cloudsql-proxy-action@v1
         with:
@@ -51,6 +52,6 @@ jobs:
           set -e;
           docker run \
             --network host \
-            --env POSTGRESQL_URL="postgresql://${{ secrets.PROD_DB_USER }}:${{ secrets.PROD_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.PROD_DB_NAME }}" \
+            --env POSTGRESQL_URL="${{ secrets.AWS_PROD_POSTGRESQL_URL_PLAINTEXT }}/amplication" \
             gcr.io/${{ github.event.inputs.image-id }} \
             npm run migrate:up
