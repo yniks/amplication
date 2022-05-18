@@ -47,7 +47,7 @@ export class StorageBaseAxios {
     const data = (
       await this.axios.get(`${appId}/${buildId}/content?path=${path}`, {
         // overwrite the parsing of json object by axios to prevent returning a object instead of string
-        transformResponse: (res) => {
+        transformResponse: (res: any) => {
           return res;
         },
       })
