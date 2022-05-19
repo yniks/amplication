@@ -58,7 +58,7 @@ amplication-server:
 
       #SENDGRID
       SENDGRID_FROM_ADDRESS: team@amplication.com
-      SENDGRID_API_KEY_SECRET_NAME: projects/948093699220/secrets/sendgrid_api_key_secret/versions/1
+#      SENDGRID_API_KEY_SECRET_NAME: projects/948093699220/secrets/sendgrid_api_key_secret/versions/1
       SENDGRID_INVITATION_TEMPLATE_ID: d-aaae46e4127c4d2399d242610e6c496a
 
       #PADDLE
@@ -68,4 +68,4 @@ amplication-server:
       AMPLITUDE_API_KEY: P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO
 
       #SEGMENT
-      SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
+#      SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
