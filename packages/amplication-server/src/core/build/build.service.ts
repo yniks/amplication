@@ -342,6 +342,16 @@ export class BuildService {
 
     return EnumBuildStatus.Running;
   }
+
+
+  async readableToString2(readable) {
+    let result = '';
+    for await (const chunk of readable) {
+      result += chunk;
+    }
+    return result;
+  }
+
   /**
    *
    * Give the ReadableStream of the build zip file
@@ -369,6 +379,11 @@ export class BuildService {
     const { exists } = await disk.exists(filePath);
     if (!exists) {
       throw new BuildResultNotFound(build.id);
+    }
+    try {
+      console.log(await this.readableToString2(disk.getStream(filePath)));
+    } catch (e) {
+      console.log(e);
     }
     return disk.getStream(filePath);
   }
