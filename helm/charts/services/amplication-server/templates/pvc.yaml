@@ -1,3 +1,11 @@
-{{ include "base.pvc" (list . "amplication-server.pvc") -}}
-{{- define "amplication-server.pvc" -}}
-{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.deployment.volume.name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storageRequest }}

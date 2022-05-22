@@ -1,0 +1,47 @@
+version: v1beta11 
+
+images:
+  amplication-server:
+    image: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server-dev
+    tags:
+    - ${IMAGE_TAG}
+
+vars:
+- name: IMAGE_TAG
+  value: 'devspace-#####'
+
+deployments:
+- name: "amplication"
+  namespace: amplication-test      
+  helm:
+    chart:
+      name: helm/charts/amplication  
+    replaceImageTags: false    
+    valuesFiles:
+    - helm/charts/amplication/values-devspace.yaml
+    - values-secrets-devspace.yaml
+    values: 
+      amplication-server:
+        deployment:
+          image:
+            tag: ${runtime.images.amplication-server.tag}
+
+dev:
+  ports:
+  - labelSelector:
+      app: amplication-client
+    forward:
+    - port: 8080
+  - labelSelector:
+      app: amplication-server
+    forward:
+    - port: 3000
+
+commands:
+- name: Install package dependencies
+  command: "cd packages/amplication-server && pwd && lerna bootstrap --scope=@amplication/server --include-dependencies"
+- name: Build Prisma client
+  command: "cd packages/amplication-server && pwd && lerna run --scope=@amplication/server prisma:generate"
+- name: npm test
+  command: "cd packages/amplication-server && pwd && lerna run --scope=@amplication/server --loglevel=silent test"
+

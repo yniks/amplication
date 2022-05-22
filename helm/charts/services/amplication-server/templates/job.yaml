@@ -7,8 +7,7 @@ spec:
     metadata:
       name: "{{ .Values.name }}-migrate"
     spec:
-      restartPolicy: Never
-      {{ if .Values.postgres.install }}
+      {{- if .Values.postgres.install }}
       initContainers:
       - name: wait-for-postgres-connection
         image: {{ .Values.postgres.postgresql.image }}
@@ -16,7 +15,7 @@ spec:
         args:
           - "pod"
           - "postgresql-0"
-      {{ end }}
+      {{- end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
         image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
@@ -29,4 +28,5 @@ spec:
               name: {{ .Values.name }}
               key: POSTGRESQL_URL
               optional: false
+      restartPolicy: Never
        

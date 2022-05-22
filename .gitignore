@@ -8,3 +8,5 @@ terraform/envs/*/.terraform.lock.hcl
 *.tgz
 values-secret*
 packages/.server-id
+.devspace
+

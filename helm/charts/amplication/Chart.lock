@@ -12,4 +12,4 @@ dependencies:
   repository: file://../services/amplication-server
   version: 0.1.0
 digest: sha256:261dae75583f7d3b73ad598e75f5046c00d9c02fb8cd2c7e6577c7599621763c
-generated: "2022-04-19T16:16:59.990381+03:00"
+generated: "2022-05-19T12:03:14.455638+03:00"
