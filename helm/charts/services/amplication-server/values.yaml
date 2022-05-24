@@ -8,6 +8,7 @@ autoscaling:
   targetMemoryUtilizationPercentage: 80
 replicaCount: 2
 volume:
+  enabled: false
   name: amplication-server-artifacts-data
   path: /artifacts
 image:
