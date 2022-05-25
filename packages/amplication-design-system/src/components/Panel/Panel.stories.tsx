@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { Panel, EnumPanelStyle, PanelHeader } from "./Panel";
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle } from "../Button/OldButton";
 
 export default {
   title: "Panel",

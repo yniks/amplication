@@ -7,7 +7,7 @@ import {
   SelectMenuList,
 } from "./SelectMenu";
 
-import { EnumButtonStyle } from "../Button/Button";
+import { EnumButtonStyle } from "../Button/OldButton";
 
 export default {
   title: "SelectMenu",

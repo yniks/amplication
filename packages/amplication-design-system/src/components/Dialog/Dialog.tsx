@@ -5,7 +5,7 @@ import {
   DialogProps as PrimerDialogProps,
   ThemeProvider,
 } from "@primer/react";
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle } from "../Button/OldButton";
 import "./Dialog.scss";
 
 const CLASS_NAME = "amp-dialog";

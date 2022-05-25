@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import { Icon } from "../Icon/Icon";
-import { Button } from "../Button/Button";
+import { Button } from "../Button/OldButton";
 import "./TextInput.scss";
 import { Label } from "../Label/Label";
 

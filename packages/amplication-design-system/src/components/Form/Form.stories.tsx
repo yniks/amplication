@@ -3,7 +3,7 @@ import { Meta } from "@storybook/react/types-6-0";
 import { Formik } from "formik";
 import { Form, EnumFormStyle } from "./Form";
 import { FormHeader } from "./FormHeader";
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle } from "../Button/OldButton";
 import { TextField } from "../TextField/TextField";
 import { SelectField } from "../SelectField/SelectField";
 import { ToggleField } from "../Toggle/ToggleField";

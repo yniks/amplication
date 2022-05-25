@@ -11,7 +11,7 @@ import SearchField, {
   Props as SearchFieldProps,
 } from "../SearchField/SearchField";
 
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle } from "../Button/OldButton";
 
 import "./SelectMenu.scss";
 

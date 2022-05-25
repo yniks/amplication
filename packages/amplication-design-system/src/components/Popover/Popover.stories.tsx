@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { Popover } from "./Popover";
-import { Button } from "../Button/Button";
+import { Button } from "OldButton";
 
 export default {
   title: "Popover",
