@@ -31,6 +31,7 @@ jobs:
       run: |
         if [ "$TARGET_ENV" = "custom" ]; then
           TARGET_ENV="staging-os"
+          echo "using custom target: $TARGET_ENV"
         fi
         export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
         echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
@@ -72,6 +73,7 @@ jobs:
         run: |
           if [ "$TARGET_ENV" = "custom" ]; then
             TARGET_ENV=$TARGET_ENV_CUSTOM
+            echo "using custom target: $TARGET_ENV"
           fi
           NAMESPACE=$TARGET_ENV
           echo "Will deploy to $NAMESPACE"
@@ -87,6 +89,7 @@ jobs:
           else
             CLUSTER_NAME="useast1-$TARGET_ENV"
           fi
+          echo "using cluster name: $CLUSTER_NAME"
           echo "Will deploy to $CLUSTER_NAME eks cluster"
           echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
         env:
@@ -118,14 +121,16 @@ jobs:
           chmod +x /usr/local/bin/argocd
       - name: deploy app
         id: deploy-app
-        run: |
+        run: |           
           if [ "$TARGET_ENV" = "custom" ]; then
             TARGET_ENV="staging-os"
+            echo "using custom target: $TARGET_ENV"
           fi
           ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
           if [ "$TARGET_ENV" = "custom" ]; then
             TARGET_ENV=$TARGET_ENV_CUSTOM
+            echo "using custom target: $TARGET_ENV"
             sed -i "s|staging-os|$NAMESPACE|g" secret-$TARGET_ENV.yaml
           fi
           secret_values_file_content=$(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
