@@ -30,10 +30,8 @@ jobs:
       id: create-secret-names
       run: |
         if [ "$TARGET_ENV" = "custom" ]; then
-          TARGET_ENV=$TARGET_ENV_CUSTOM
+          TARGET_ENV="staging-os"
         fi
-        export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-        echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
         echo "::set-output name=ARGOCD::AWS_${TARGET_ENV_SECRET}_ARGOCD"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
