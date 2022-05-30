@@ -389,9 +389,9 @@ export class BuildService {
         .bucket('amplication-artifacts')
         .file(filePath)
         .download(downloadOptions);
-      console.log('File was successfully downloaded. ');
+      this.logger.info('File was successfully downloaded. ');
     } catch (err) {
-      console.log(err);
+      this.logger.error(err);
     }
 
     return fs.createReadStream('temp.zip');
