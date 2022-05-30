@@ -45,6 +45,7 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { GitService } from '@amplication/git-service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { Storage as GCPStorage } from '@google-cloud/storage';
+import * as fs from 'fs';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -380,10 +381,20 @@ export class BuildService {
     // const [metaData] = await storage.bucket('amplication-artifacts').file(filePath).getMetadata();
     // return metaData.mediaLink
     //TODO: replace hardcoded value with env variable
-    return storage
-      .bucket('amplication-artifacts')
-      .file(filePath)
-      .createReadStream();
+    const downloadOptions = {
+      destination: 'temp.zip'
+    };
+    try {
+      await storage
+        .bucket('amplication-artifacts')
+        .file(filePath)
+        .download(downloadOptions);
+      console.log('File was successfully downloaded. ');
+    } catch (err) {
+      console.log(err);
+    }
+
+    return fs.createReadStream('temp.zip');
   }
 
   /**
