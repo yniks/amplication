@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import assert from "assert";
 import { readFileSync } from "fs";
 import { sync } from "glob";
-import { join } from "path";
+import { join, normalize } from "path";
 import { BASE_BUILDS_FOLDER } from "src/constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
@@ -16,7 +16,7 @@ export class StorageService {
   constructor(configService: ConfigService) {
     const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
     assert(buildsFolder);
-    this.buildsFolder = buildsFolder;
+    this.buildsFolder = normalize(buildsFolder);
   }
 
   private static buildFolder(
