@@ -1,11 +1,12 @@
-import { IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 import { GitCommit } from './GitCommit';
 export class SendPullRequestArgs {
   @IsString()
   amplicationAppId!: string;
   @IsString()
-  oldBuildId!: string;
+  @IsOptional()
+  oldBuildId!: string | null;
   @IsString()
   newBuildId!: string;
   @IsString()
