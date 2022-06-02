@@ -10,9 +10,4 @@ export class EnvironmentVariables {
     }
     return envValue;
   }
-  static getArray(key: string, strict: boolean, separator: string): string[] {
-    const envValue = EnvironmentVariables.get(key, strict);
-    const array = envValue.split(separator);
-    return array;
-  }
 }
