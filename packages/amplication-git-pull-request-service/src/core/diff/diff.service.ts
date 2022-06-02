@@ -16,13 +16,12 @@ export class DiffService {
   ) {}
   async listOfChangedFiles(
     amplicationAppId: string,
-    previousAmplicationBuildId: string,
+    previousAmplicationBuildId: string | null,
     newAmplicationBuildId: string
   ): Promise<{ path: string; code: string }[]> {
-    const oldBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
-      previousAmplicationBuildId
-    );
+    const oldBuildPath = previousAmplicationBuildId
+      ? this.buildsPathFactory.get(amplicationAppId, previousAmplicationBuildId)
+      : null;
     const newBuildPath = this.buildsPathFactory.get(
       amplicationAppId,
       newAmplicationBuildId
@@ -39,7 +38,7 @@ export class DiffService {
     );
 
     // return all the new files if an old build folder dont exist
-    if (existsSync(oldBuildPath) === false) {
+    if (!oldBuildPath) {
       return this.firstBuild(newBuildPath);
     }
 
@@ -55,7 +54,9 @@ export class DiffService {
     });
 
     this.logger.debug('Finish the dir-compare lib process');
-
+    if (!res.diffSet) {
+      throw new Error("Didn't found a diff between builds");
+    }
     const changedFiles = res.diffSet.filter((diff) => {
       if (diff.state !== 'equal' && diff.type2 === 'file') {
         //make sure that only new files enter and ignore old files
@@ -69,6 +70,9 @@ export class DiffService {
     this.logger.info('The list of the changed files', { changedFiles });
 
     const modules = changedFiles.map(async (diff) => {
+      if (!diff.name2 || !diff.path2) {
+        throw new Error('Unexpected error');
+      }
       const path = join(diff.relativePath, diff.name2);
       const code = await readFileSync(join(diff.path2, diff.name2)).toString(
         'utf8'

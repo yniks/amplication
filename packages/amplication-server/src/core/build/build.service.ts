@@ -230,7 +230,7 @@ export class BuildService {
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user, oldBuild.id);
+    const tarballURL = await this.generate(build, user, oldBuild?.id || null);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
@@ -390,7 +390,7 @@ export class BuildService {
   private async generate(
     build: Build,
     user: User,
-    oldBuildId: string
+    oldBuildId: string | null
   ): Promise<string> {
     return this.actionService.run(
       build.actionId,
@@ -599,7 +599,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(build: Build, oldBuildId: string) {
+  private async saveToGitHub(build: Build, oldBuildId: string | null) {
     const app = build.app;
 
     const appRepository = await this.prisma.gitRepository.findUnique({
