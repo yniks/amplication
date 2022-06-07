@@ -12,6 +12,7 @@ on:
         - staging
         - prod
         - custom
+        - shimi
 jobs:
   prepare:
     runs-on: ubuntu-18.04
