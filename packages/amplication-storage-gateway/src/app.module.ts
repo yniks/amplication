@@ -1,4 +1,4 @@
-import { Module, Scope } from "@nestjs/common";
+import {MiddlewareConsumer, Module, RequestMethod, Scope} from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MorganInterceptor, MorganModule } from "nest-morgan";
 import { HealthModule } from "./health/health.module";
@@ -6,9 +6,9 @@ import { SecretsManagerModule } from "./providers/secrets/secretsManager.module"
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
-import { GraphQLModule } from "@nestjs/graphql";
 import { StorageModule } from "./storage/storage.module";
 import { AuthModule } from "./auth/auth.module";
+import {HttpLoggerMiddleware} from "@nest-toolbox/http-logger-middleware";
 
 @Module({
   controllers: [],
@@ -34,4 +34,11 @@ import { AuthModule } from "./auth/auth.module";
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggerMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
+}
