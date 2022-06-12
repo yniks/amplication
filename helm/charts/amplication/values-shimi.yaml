@@ -7,6 +7,9 @@ cp-helm-charts:
 
 postgres:
   install: true
+  auth:
+    postgresPassword: postgres
+
 
 amplication-client:
   service:
